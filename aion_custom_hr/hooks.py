@@ -159,7 +159,9 @@ doc_events = {
         "validate": "aion_custom_hr.api.leave_application.validate_leave_balance"
     },
     "Salary Slip": {
-        "validate": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count"
+        "validate": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
+        "before_save": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
+        "on_update": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count"
     }
 }
 
