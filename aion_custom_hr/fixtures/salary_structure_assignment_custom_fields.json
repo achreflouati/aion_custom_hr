@@ -1,0 +1,110 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "section_rate_score",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "section_rate_score",
+    "label": "Rates and Scores",
+    "fieldtype": "Section Break",
+    "insert_after": "base_and_variable"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "rate_1",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "rate_1",
+    "label": "Rate 1",
+    "fieldtype": "Float",
+    "insert_after": "section_rate_score"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "rate_2",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "rate_2",
+    "label": "Rate 2",
+    "fieldtype": "Float",
+    "insert_after": "rate_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "rate_3",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "rate_3",
+    "label": "Rate 3",
+    "fieldtype": "Float",
+    "insert_after": "rate_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "rate_4",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "rate_4",
+    "label": "Rate 4",
+    "fieldtype": "Float",
+    "insert_after": "rate_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "rate_5",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "rate_5",
+    "label": "Rate 5",
+    "fieldtype": "Float",
+    "insert_after": "rate_4"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_scores",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "column_break_scores",
+    "label": "",
+    "fieldtype": "Column Break",
+    "insert_after": "rate_5"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "score_1",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "score_1",
+    "label": "Score 1",
+    "fieldtype": "Float",
+    "insert_after": "column_break_scores"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "score_2",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "score_2",
+    "label": "Score 2",
+    "fieldtype": "Float",
+    "insert_after": "score_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "score_3",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "score_3",
+    "label": "Score 3",
+    "fieldtype": "Float",
+    "insert_after": "score_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "score_4",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "score_4",
+    "label": "Score 4",
+    "fieldtype": "Float",
+    "insert_after": "score_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "score_5",
+    "dt": "Salary Structure Assignment",
+    "fieldname": "score_5",
+    "label": "Score 5",
+    "fieldtype": "Float",
+    "insert_after": "score_4"
+  }
+]

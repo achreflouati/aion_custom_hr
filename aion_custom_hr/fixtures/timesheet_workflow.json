@@ -1,0 +1,19 @@
+{
+  "doctype": "Workflow",
+  "name": "Timesheet Workflow",
+  "workflow_name": "Timesheet Workflow",
+  "document_type": "Timesheet",
+  "is_active": 1,
+  "workflow_state_field": "status",
+  "states": [
+    {"state": "Draft", "doc_status": 0, "allow_edit": "All"},
+    {"state": "Pending Approval", "doc_status": 0, "allow_edit": "Approver"},
+    {"state": "Approved", "doc_status": 1, "allow_edit": "Approver"},
+    {"state": "Rejected", "doc_status": 2, "allow_edit": "Approver"}
+  ],
+  "transitions": [
+    {"state": "Draft", "action": "Submit", "next_state": "Pending Approval", "allowed": "All"},
+    {"state": "Pending Approval", "action": "Approve", "next_state": "Approved", "allowed": "Approver"},
+    {"state": "Pending Approval", "action": "Reject", "next_state": "Rejected", "allowed": "Approver"}
+  ]
+}

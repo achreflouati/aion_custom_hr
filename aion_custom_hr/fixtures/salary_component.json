@@ -1,0 +1,17 @@
+[
+  {
+    "doctype": "Salary Component",
+    "name": "Monthly Appraisal Bonus",
+    "salary_component": "Monthly Appraisal Bonus",
+    "type": "Earning",
+    "is_active": 1,
+    "depends_on_lwp": 0,
+    "variable_based_on_taxable_salary": 0,
+    "amount_based_on_formula": 1,
+    "formula": "(base * 0.25) if monthly_appraisal_score >= 95 else (base * 0.225) if monthly_appraisal_score >= 90 else (base * 0.20) if monthly_appraisal_score >= 75 else (base * 0.15) if monthly_appraisal_score >= 65 else (base * 0.10) if monthly_appraisal_score >= 50 else 0.0",
+    "description": "Bonus mensuel basé sur le score d'évaluation mensuel de l'employé.",
+    "is_tax_applicable": 0,
+    "do_not_include_in_total": 0,
+    "condition": "base > 0"
+  }
+]

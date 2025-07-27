@@ -1,0 +1,12 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "work_assignment_approver",
+    "dt": "Timesheet",
+    "fieldname": "work_assignment_approver",
+    "fieldtype": "Table",
+    "options": "Work Assignment Approver",
+    "label": "Work Assignment Approver",
+    "insert_after": "tasks"
+  }
+]

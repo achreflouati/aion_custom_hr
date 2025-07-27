@@ -1,0 +1,20 @@
+[
+  {
+    "doctype": "Custom Field",
+    "dt": "Attendance",
+    "fieldname": "total_late_minutes",
+    "name": "Attendance-total_late_minutes",
+    "label": "Total Late Minutes",
+    "fieldtype": "Float",
+    "insert_after": "status"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Attendance",
+    "fieldname": "total_early_exit_minutes",
+    "name": "Attendance-total_early_exit_minutes",
+    "label": "Total Early Exit Minutes",
+    "fieldtype": "Float",
+    "insert_after": "total_late_minutes"
+  }
+]

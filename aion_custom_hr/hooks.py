@@ -21,8 +21,14 @@ app_license = "mit"
 # 	}
 # ]
 
+
 # Includes in <head>
 # ------------------
+fixtures = [
+    "Custom Field",
+    "Salary Component",
+    {"dt": "Salary Structure Assignment"}
+]
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/aion_custom_hr/css/aion_custom_hr.css"
@@ -43,7 +49,10 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+    "Attendance": "public/js/attendance_status.js",
+    "Appraisal": "public/js/appraisal_monthly_score.js"
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -137,13 +146,18 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    "Appraisal": {
+        "on_submit": "aion_custom_hr.api.update_monthly_appraisal_score_handler.update_monthly_appraisal_score_handler",
+        "on_update": "aion_custom_hr.api.update_monthly_appraisal_score_handler.update_monthly_appraisal_score_handler"
+    },
+    "Attendance": {
+        "validate": "aion_custom_hr.api.attendance_status.set_attendance_status"
+    },
+    "Leave Application": {
+        "validate": "aion_custom_hr.api.leave_application.validate_leave_balance"
+    }
+}
 
 # Scheduled Tasks
 # ---------------

@@ -1,0 +1,22 @@
+[
+  {
+    "doctype": "Workflow",
+    "name": "Timesheet Approval Workflow",
+    "workflow_name": "Timesheet Approval Workflow",
+    "document_type": "Timesheet",
+    "is_active": 1,
+    "workflow_state_field": "status",
+    "states": [
+      {"state": "Draft", "doc_status": 0, "allow_edit": "All"},
+      {"state": "Pending Approval", "doc_status": 0, "allow_edit": "Project Manager,Direct Manager"},
+      {"state": "Approved", "doc_status": 1, "allow_edit": "Project Manager,Direct Manager"},
+      {"state": "Rejected", "doc_status": 2, "allow_edit": "Project Manager,Direct Manager"}
+    ],
+    "transitions": [
+      {"state": "Draft", "action": "Submit", "next_state": "Pending Approval", "allowed": "All"},
+      {"state": "Pending Approval", "action": "Approve", "next_state": "Approved", "allowed": "Project Manager,Direct Manager"},
+      {"state": "Pending Approval", "action": "Reject", "next_state": "Rejected", "allowed": "Project Manager,Direct Manager"}
+    ],
+    "condition": "eval: doc.project and frappe.db.get_value('Project', doc.project, 'project_manager') == frappe.session.user or not doc.project and frappe.db.get_value('Employee', doc.employee, 'reports_to') == frappe.session.user"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "late_entry_assume_as_absent",
+    "dt": "Shift Type",
+    "fieldname": "late_entry_assume_as_absent",
+    "label": "Late Entry Assume as Absent (minutes)",
+    "fieldtype": "Int",
+    "insert_after": "late_entry_grace_period"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "early_exit_assume_as_absent",
+    "dt": "Shift Type",
+    "fieldname": "early_exit_assume_as_absent",
+    "label": "Early Exit Assume as Absent (minutes)",
+    "fieldtype": "Int",
+    "insert_after": "early_exit_grace_period"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "late_entry_assume_as_absent_attendance",
+    "dt": "Attendance",
+    "fieldname": "late_entry_assume_as_absent",
+    "label": "Late Entry Assume as Absent",
+    "fieldtype": "Check",
+    "insert_after": "late_entry"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "early_exit_assume_as_absent_attendance",
+    "dt": "Attendance",
+    "fieldname": "early_exit_assume_as_absent",
+    "label": "Early Exit Assume as Absent",
+    "fieldtype": "Check",
+    "insert_after": "early_exit"
+  }
+]

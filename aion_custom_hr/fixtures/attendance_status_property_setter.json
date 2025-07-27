@@ -1,0 +1,12 @@
+[
+  {
+    "doctype": "Property Setter",
+    "name": "Attendance-status-options",
+    "doctype_or_field": "DocField",
+    "doc_type": "Attendance",
+    "field_name": "status",
+    "property": "options",
+    "property_type": "Text",
+    "value": "Present\nAbsent\nHalf Day\nOn Leave\nWork From Home\nAssume as Absent"
+  }
+]
