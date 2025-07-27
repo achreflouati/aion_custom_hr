@@ -27,7 +27,8 @@ app_license = "mit"
 fixtures = [
     "Custom Field",
     "Salary Component",
-    {"dt": "Salary Structure Assignment"}
+    {"dt": "Salary Structure Assignment"},
+    {"dt": "Custom Field", "filters": {"dt": "Salary Slip", "fieldname": "assume_as_absent_count"}}
 ]
 
 # include js, css files in header of desk.html
@@ -156,6 +157,9 @@ doc_events = {
     },
     "Leave Application": {
         "validate": "aion_custom_hr.api.leave_application.validate_leave_balance"
+    },
+    "Salary Slip": {
+        "validate": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count"
     }
 }
 

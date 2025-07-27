@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Salary Slip-assume_as_absent_count",
+        "doctype": "Custom Field",
+        "dt": "Salary Slip",
+        "fieldname": "assume_as_absent_count",
+        "fieldtype": "Int",
+        "label": "Assume as Absent Count",
+        "insert_after": "absent_days",
+        "read_only": 1,
+        "description": "Total number of attendances marked as assume absent",
+        "default": "0"
+    }
+]
