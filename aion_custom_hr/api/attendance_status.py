@@ -48,17 +48,26 @@ def set_attendance_status(doc, method=None):
             doc.late_entry_assume_as_absent = True
         if early_assume_absent and early_exit_minutes >= early_assume_absent:
             doc.early_exit_assume_as_absent = True
+        
+        # Logique arrondi : si total_late_minutes > grace_late, alors arrondir à 60 minutes
+        if late_minutes > grace_late:
+            doc.total_late_minutes = late_minutes - late_minutes + 60
+        
+        # Logique arrondi pour early exit : si total_early_exit_minutes > grace_early, alors arrondir à 60 minutes  
+        if early_exit_minutes > grace_early:
+            doc.total_early_exit_minutes = early_exit_minutes - early_exit_minutes + 60
+            
         # Cas pile à l'heure
-        if late_minutes == 0 and early_exit_minutes == 0:
-            doc.status = 'Present'
-        # Cas retard et/ou départ anticipé dans la tolérance
-        elif (late_minutes > 0 and late_minutes <= grace_late) and (early_exit_minutes > 0 and early_exit_minutes <= grace_early):
-            doc.status = 'Present'
-        elif (late_minutes > 0 and late_minutes <= grace_late):
-            doc.status = 'Present'
-        elif (early_exit_minutes > 0 and early_exit_minutes <= grace_early):
-            doc.status = 'Present'
-        # Cas dépassement de tolérance (un ou les deux)
-        elif late_minutes > grace_late or early_exit_minutes > grace_early:
-            doc.status = 'Present'
+        # if late_minutes == 0 and early_exit_minutes == 0:
+        #     doc.status = 'Present'
+        # # Cas retard et/ou départ anticipé dans la tolérance
+        # elif (late_minutes > 0 and late_minutes <= grace_late) and (early_exit_minutes > 0 and early_exit_minutes <= grace_early):
+        #     doc.status = 'Present'
+        # elif (late_minutes > 0 and late_minutes <= grace_late):
+        #     doc.status = 'Present'
+        # elif (early_exit_minutes > 0 and early_exit_minutes <= grace_early):
+        #     doc.status = 'Present'
+        # # Cas dépassement de tolérance (un ou les deux)
+        # elif late_minutes > grace_late or early_exit_minutes > grace_early:
+        #     doc.status = 'Present'
         

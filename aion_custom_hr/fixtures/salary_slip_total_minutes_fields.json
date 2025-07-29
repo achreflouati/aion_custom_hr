@@ -1,0 +1,24 @@
+[
+    {
+        "doctype": "Custom Field",
+        "name": "Salary Slip-total_late_minutes_sum",
+        "dt": "Salary Slip",
+        "fieldname": "total_late_minutes_sum",
+        "label": "Total Late Minutes",
+        "fieldtype": "Int",
+        "insert_after": "assume_as_absent_count",
+        "read_only": 1,
+        "description": "Total of late minutes for this employee"
+    },
+    {
+        "doctype": "Custom Field",
+        "name": "Salary Slip-total_early_exit_minutes_sum",
+        "dt": "Salary Slip",
+        "fieldname": "total_early_exit_minutes_sum",
+        "label": "Total Early Exit Minutes",
+        "fieldtype": "Int",
+        "insert_after": "total_late_minutes_sum",
+        "read_only": 1,
+        "description": "Total of early exit minutes for this employee"
+    }
+]

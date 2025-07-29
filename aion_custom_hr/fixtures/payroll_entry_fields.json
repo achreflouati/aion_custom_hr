@@ -1,0 +1,35 @@
+[
+    {
+        "doctype": "Custom Field",
+        "name": "Payroll Entry-total_late_minutes_sum",
+        "dt": "Payroll Entry",
+        "fieldname": "total_late_minutes_sum",
+        "label": "Total Late Minutes (All Employees)",
+        "fieldtype": "Int",
+        "insert_after": "company",
+        "read_only": 1,
+        "description": "Sum of all late minutes for all employees in this payroll"
+    },
+    {
+        "doctype": "Custom Field",
+        "name": "Payroll Entry-total_early_exit_minutes_sum",
+        "dt": "Payroll Entry",
+        "fieldname": "total_early_exit_minutes_sum",
+        "label": "Total Early Exit Minutes (All Employees)",
+        "fieldtype": "Int",
+        "insert_after": "total_late_minutes_sum",
+        "read_only": 1,
+        "description": "Sum of all early exit minutes for all employees in this payroll"
+    },
+    {
+        "doctype": "Custom Field",
+        "name": "Payroll Entry-total_assume_absent_count",
+        "dt": "Payroll Entry",
+        "fieldname": "total_assume_absent_count",
+        "label": "Total Assume as Absent Count (All Employees)",
+        "fieldtype": "Int",
+        "insert_after": "total_early_exit_minutes_sum",
+        "read_only": 1,
+        "description": "Total count of assume as absent days for all employees in this payroll"
+    }
+]
