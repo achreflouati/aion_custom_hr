@@ -1,0 +1,34 @@
+[
+    {
+        "doctype": "Custom Field",
+        "name": "Leave Application-employee_tasks_section",
+        "dt": "Leave Application",
+        "fieldname": "employee_tasks_section",
+        "label": "Employee Tasks Review",
+        "fieldtype": "Section Break",
+        "insert_after": "description",
+        "depends_on": "eval:doc.employee",
+        "collapsible": 1
+    },
+    {
+        "doctype": "Custom Field", 
+        "name": "Leave Application-employee_tasks",
+        "dt": "Leave Application",
+        "fieldname": "employee_tasks",
+        "label": "Employee Tasks",
+        "fieldtype": "Table",
+        "options": "Task hr view",
+        "insert_after": "employee_tasks_section",
+        "description": "Tasks assigned to this employee that require approval review"
+    },
+    {
+        "doctype": "Custom Field",
+        "name": "Leave Application-tasks_summary",
+        "dt": "Leave Application", 
+        "fieldname": "tasks_summary",
+        "label": "Tasks Summary",
+        "fieldtype": "HTML",
+        "insert_after": "employee_tasks",
+        "options": "<div class='text-muted'><small>Manager can review and approve/reject employee tasks before approving leave</small></div>"
+    }
+]

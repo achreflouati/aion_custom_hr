@@ -28,7 +28,8 @@ fixtures = [
     "Custom Field",
     "Salary Component",
     {"dt": "Salary Structure Assignment"},
-    {"dt": "Custom Field", "filters": {"dt": "Salary Slip", "fieldname": "assume_as_absent_count"}}
+    {"dt": "Custom Field", "filters": {"dt": "Salary Slip", "fieldname": "assume_as_absent_count"}},
+    {"dt": "Custom Field", "filters": {"dt": "Leave Application", "fieldname": "employee_tasks"}}
 ]
 
 # include js, css files in header of desk.html
@@ -52,7 +53,8 @@ fixtures = [
 # include js in doctype views
 doctype_js = {
     "Attendance": "public/js/attendance_status.js",
-    "Appraisal": "public/js/appraisal_monthly_score.js"
+    "Appraisal": "public/js/appraisal_monthly_score.js",
+    "Leave Application": "public/js/leave_application_task_review.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}

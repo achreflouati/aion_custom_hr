@@ -1,0 +1,92 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-30 17:31:04.818064",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "department",
+  "work_assignment_approver",
+  "approved_",
+  "task_manger_hr",
+  "subject_of_task",
+  "status",
+  "progress"
+ ],
+ "fields": [
+  {
+   "fieldname": "task_manger_hr",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Task manger HR ",
+   "options": "Task manger HR"
+  },
+  {
+   "fetch_from": "task_manger_hr.subject",
+   "fieldname": "subject_of_task",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Subject of task"
+  },
+  {
+   "fetch_from": "task_manger_hr.status",
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "status"
+  },
+  {
+   "fetch_from": "task_manger_hr.progress",
+   "fieldname": "progress",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Progress %"
+  },
+  {
+   "columns": 1,
+   "fetch_from": "task_manger_hr.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Department "
+  },
+  {
+   "columns": 1,
+   "fieldname": "approved_",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "approved ?",
+   "options": "\npending\napproved\nrejected"
+  },
+  {
+   "columns": 2,
+   "fieldname": "work_assignment_approver",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "work assignment approver"
+  },
+  {
+   "columns": 2,
+   "fetch_from": "task_manger_hr.employee",
+   "fieldname": "employee",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "employee"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-30 18:42:35.915452",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Task hr view",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
