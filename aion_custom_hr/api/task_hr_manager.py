@@ -34,9 +34,9 @@ def get_employee_tasks(employee):
         'employee': employee
     }, as_dict=1)
     
-    # Pour chaque tâche, déterminer l'approbateur
+    # Pour chaque tâche, déterminer l'approbateur (toujours recalculé)
     for task in tasks:
-        # Trouver l'approbateur dans le département
+        # Toujours recalculer l'approbateur pour avoir les données les plus récentes
         approver = get_department_approver(task.get('department'), employee)
         
         # Si pas d'approbateur trouvé, utiliser le Leave Approver par défaut
@@ -44,28 +44,79 @@ def get_employee_tasks(employee):
             # Chercher le Leave Approver de l'employé
             leave_approver = frappe.db.get_value('Employee', employee, 'leave_approver')
             if leave_approver:
+                # Récupérer le nom complet de l'approbateur
+                approver_name = frappe.db.get_value('User', leave_approver, 'full_name') or leave_approver
                 approver = {
                     'name': leave_approver,
-                    'employee_name': leave_approver,
+                    'employee_name': approver_name,
                     'designation': 'Leave Approver'
                 }
         
         task.update({
-            'work_assignment_approver': approver.get('employee_name') if approver else 'No Approver Found',
+            'work_assignment_approver': approver.get('employee_name') if approver else 'Administrator',
             'approved_': 'pending'  # Status initial
         })
     
     return tasks
 
 
+@frappe.whitelist()
 def get_department_approver(department, employee):
     """
-    Trouve un approbateur dans le département (manager, director, etc.)
+    Trouve un approbateur dans le département (via custom field table ou designation)
     """
     if not department:
         return None
     
-    # D'abord chercher des managers/superviseurs
+    frappe.logger().info(f"Searching approver for department: {department}, employee: {employee}")
+    
+    # D'abord chercher si le département a des approbateurs définis via le child table
+    try:
+        department_approvers = frappe.get_all('Department Approver', 
+            filters={'parent': department, 'parenttype': 'Department'},
+            fields=['approver'])
+        
+        frappe.logger().info(f"Found department approvers: {department_approvers}")
+        
+        if department_approvers:
+            # Récupérer tous les approbateurs de la liste
+            approver_names = []
+            
+            for approver_row in department_approvers:
+                approver_user = approver_row.get('approver')
+                
+                if approver_user:
+                    # Chercher l'employé correspondant à cet utilisateur
+                    employee_data = frappe.db.get_value('Employee', 
+                        {'user_id': approver_user, 'status': 'Active'}, 
+                        ['name', 'employee_name', 'designation'], as_dict=True)
+                    
+                    if employee_data and employee_data.name != employee:
+                        approver_names.append(employee_data.employee_name)
+                    else:
+                        # Si pas d'employé trouvé, utiliser les données utilisateur
+                        user_data = frappe.db.get_value('User', approver_user, 
+                            ['name', 'full_name'], as_dict=True)
+                        if user_data:
+                            approver_names.append(user_data.full_name or user_data.name)
+            
+            # Si on a trouvé des approbateurs, les retourner
+            if approver_names:
+                # Joindre tous les noms avec une virgule
+                combined_names = ", ".join(approver_names)
+                frappe.logger().info(f"Found multiple department approvers: {combined_names}")
+                
+                return {
+                    'name': 'Multiple Approvers',
+                    'employee_name': combined_names,
+                    'designation': 'Department Approvers'
+                }
+    except Exception as e:
+        frappe.logger().warning(f"Error reading department approvers: {e}")
+    
+    # Fallback: chercher des managers/superviseurs par désignation
+    frappe.logger().info("No department approver found, falling back to designation search")
+    
     approver = frappe.db.sql("""
         SELECT 
             name,
@@ -101,6 +152,8 @@ def get_department_approver(department, employee):
         'supervisor_pattern': '%Supervisor%'
     }, as_dict=1)
     
+    frappe.logger().info(f"Found managers/supervisors: {approver}")
+    
     # Si aucun manager trouvé, prendre n'importe quel autre employé actif du département
     if not approver:
         approver = frappe.db.sql("""
@@ -121,6 +174,8 @@ def get_department_approver(department, employee):
             'department': department,
             'employee': employee
         }, as_dict=1)
+        
+        frappe.logger().info(f"Found other employees: {approver}")
     
     # Si toujours aucun, prendre l'administrateur par défaut
     if not approver:
@@ -129,8 +184,11 @@ def get_department_approver(department, employee):
             'employee_name': 'System Administrator',
             'designation': 'Administrator'
         }]
+        frappe.logger().info(f"Using fallback: {approver}")
     
-    return approver[0] if approver else None
+    result = approver[0] if approver else None
+    frappe.logger().info(f"Final approver result: {result}")
+    return result
 
 
 @frappe.whitelist()
@@ -216,19 +274,19 @@ def update_task_approval_decisions(leave_application, tasks_data):
         return {"status": "error", "message": f"Erreur: {str(e)}"}
 
 
-def auto_load_employee_tasks(doc, method=None):
+def auto_load_employee_tasks(doc, method=None, force_reload=False):
     """
     Charge automatiquement les tâches lors de la sélection d'un employé
     Hook à utiliser dans Leave Application
     """
-    if doc.employee and not doc.get('employee_tasks'):
+    if doc.employee and (not doc.get('employee_tasks') or force_reload):
         try:
             tasks = get_employee_tasks(doc.employee)
             
             # Vider la table existante
             doc.employee_tasks = []
             
-            # Ajouter les tâches
+            # Ajouter les tâches avec les approbateurs recalculés
             for task in tasks:
                 doc.append("employee_tasks", {
                     "task_manger_hr": task.get("name"),
@@ -248,13 +306,14 @@ def auto_load_employee_tasks(doc, method=None):
 @frappe.whitelist()
 def reload_employee_tasks(leave_application):
     """
-    Recharge les tâches d'un employé pour une demande de congé
+    Recharge les tâches d'un employé pour une demande de congé avec recalcul des approbateurs
     """
     try:
         doc = frappe.get_doc("Leave Application", leave_application)
         if doc.employee:
-            auto_load_employee_tasks(doc)
+            # Forcer le rechargement même si la table n'est pas vide
+            auto_load_employee_tasks(doc, force_reload=True)
             doc.save()
-            return {"status": "success", "message": "Tâches rechargées avec succès"}
+            return {"status": "success", "message": "Tâches rechargées avec succès et approbateurs mis à jour"}
     except Exception as e:
         return {"status": "error", "message": str(e)}

@@ -8,13 +8,25 @@ frappe.ui.form.on('Leave Application', {
         }
     },
     
+    // Auto-update des approbateurs quand on change l'approbateur de congé
+    leave_approver: function(frm) {
+        if (frm.doc.employee_tasks && frm.doc.employee_tasks.length > 0) {
+            auto_update_task_approvers(frm);
+        }
+    },
+    
     refresh: function(frm) {
         // Charger les tâches si l'employé est sélectionné mais pas de tâches
         if (frm.doc.employee && (!frm.doc.employee_tasks || frm.doc.employee_tasks.length === 0)) {
             load_employee_tasks(frm);
         }
         
-        // Ajouter bouton de rechargement
+        // Auto-update des approbateurs si des tâches existent déjà
+        if (frm.doc.employee && frm.doc.employee_tasks && frm.doc.employee_tasks.length > 0) {
+            auto_update_task_approvers(frm);
+        }
+        
+        // Ajouter bouton de rechargement (gardé pour les cas exceptionnels)
         if (frm.doc.employee && frm.doc.docstatus === 0) {
             frm.add_custom_button(__('Reload Tasks'), function() {
                 reload_employee_tasks(frm);
@@ -276,6 +288,83 @@ function check_task_decisions(frm) {
             indicator: 'blue'
         });
     }
+}
+
+function auto_update_task_approvers(frm) {
+    if (!frm.doc.employee_tasks || frm.doc.employee_tasks.length === 0) {
+        return;
+    }
+    
+    // Mise à jour silencieuse et rapide
+    frm.doc.employee_tasks.forEach(function(task) {
+        if (task.department) {
+            frappe.call({
+                method: 'aion_custom_hr.api.task_hr_manager.get_department_approver',
+                args: {
+                    department: task.department,
+                    employee: frm.doc.employee
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        let new_approver = r.message.employee_name || r.message.name || 'No Approver Found';
+                        if (task.work_assignment_approver !== new_approver) {
+                            task.work_assignment_approver = new_approver;
+                            frm.refresh_field('employee_tasks');
+                        }
+                    } else {
+                        // Fallback vers Leave Approver
+                        let fallback_approver = frm.doc.leave_approver_name || frm.doc.leave_approver || 'No Approver Found';
+                        if (task.work_assignment_approver !== fallback_approver) {
+                            task.work_assignment_approver = fallback_approver;
+                            frm.refresh_field('employee_tasks');
+                        }
+                    }
+                }
+            });
+        }
+    });
+}
+
+function update_task_approvers(frm) {
+    if (!frm.doc.employee_tasks || frm.doc.employee_tasks.length === 0) {
+        frappe.msgprint(__('No tasks to update'));
+        return;
+    }
+    
+    frappe.show_alert(__('Updating task approvers...'));
+    
+    // Pour chaque tâche, recalculer l'approbateur
+    let promises = [];
+    
+    frm.doc.employee_tasks.forEach(function(task) {
+        if (task.department) {
+            let promise = frappe.call({
+                method: 'aion_custom_hr.api.task_hr_manager.get_department_approver',
+                args: {
+                    department: task.department,
+                    employee: frm.doc.employee
+                }
+            }).then(function(r) {
+                if (r.message) {
+                    task.work_assignment_approver = r.message.employee_name || r.message.name || 'No Approver Found';
+                } else {
+                    // Fallback vers Leave Approver
+                    task.work_assignment_approver = frm.doc.leave_approver_name || frm.doc.leave_approver || 'No Approver Found';
+                }
+            });
+            promises.push(promise);
+        }
+    });
+    
+    Promise.all(promises).then(function() {
+        frm.refresh_field('employee_tasks');
+        frappe.show_alert({
+            message: 'Task approvers updated successfully',
+            indicator: 'green'
+        });
+    }).catch(function(error) {
+        frappe.msgprint(__('Error updating approvers: ' + error.message));
+    });
 }
 
 // CSS pour colorer les lignes
