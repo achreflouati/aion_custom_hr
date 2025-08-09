@@ -63,50 +63,51 @@ def calculate_assume_absent_count_only(doc):
 
 def calculate_late_minutes_sum(doc):
     """
-    Calcule la somme totale des minutes de retard et de sortie anticipée
+    Calcule la somme des pénalités séparées pour late entry et early exit
     """
     try:
-        # Calculer total_late_minutes_sum
+        # Calculer total_late_minutes_sum = somme des pénalités late entry
         if hasattr(doc, 'total_late_minutes_sum'):
-            late_minutes_sum = frappe.db.sql("""
-                SELECT COALESCE(SUM(total_late_minutes), 0) as total
+            late_penalty_sum = frappe.db.sql("""
+                SELECT COALESCE(SUM(late_entry_penalty_minutes), 0) as total
                 FROM `tabAttendance`
                 WHERE employee = %(employee)s
                 AND attendance_date BETWEEN %(start_date)s AND %(end_date)s
-                AND total_late_minutes > 0
+                AND late_entry_penalty_minutes > 0
             """, {
                 'employee': doc.employee,
                 'start_date': doc.start_date,
                 'end_date': doc.end_date
             }, as_dict=1)
             
-            doc.total_late_minutes_sum = int(late_minutes_sum[0].total) if late_minutes_sum else 0
-            frappe.logger().info(f"Salary Slip {doc.name}: Total late minutes: {doc.total_late_minutes_sum}")
+            doc.total_late_minutes_sum = int(late_penalty_sum[0].total) if late_penalty_sum else 0
+            frappe.logger().info(f"Salary Slip {doc.name}: Total late entry penalty: {doc.total_late_minutes_sum}")
         
-        # Calculer total_early_exit_minutes_sum
+        # Calculer total_early_exit_minutes_sum = somme des pénalités early exit
         if hasattr(doc, 'total_early_exit_minutes_sum'):
-            early_exit_minutes_sum = frappe.db.sql("""
-                SELECT COALESCE(SUM(total_early_exit_minutes), 0) as total
+            early_penalty_sum = frappe.db.sql("""
+                SELECT COALESCE(SUM(early_exit_penalty_minutes), 0) as total
                 FROM `tabAttendance`
                 WHERE employee = %(employee)s
                 AND attendance_date BETWEEN %(start_date)s AND %(end_date)s
-                AND total_early_exit_minutes > 0
+                AND early_exit_penalty_minutes > 0
             """, {
                 'employee': doc.employee,
                 'start_date': doc.start_date,
                 'end_date': doc.end_date
             }, as_dict=1)
             
-            doc.total_early_exit_minutes_sum = int(early_exit_minutes_sum[0].total) if early_exit_minutes_sum else 0
-            frappe.logger().info(f"Salary Slip {doc.name}: Total early exit minutes: {doc.total_early_exit_minutes_sum}")
+            doc.total_early_exit_minutes_sum = int(early_penalty_sum[0].total) if early_penalty_sum else 0
+            frappe.logger().info(f"Salary Slip {doc.name}: Total early exit penalty: {doc.total_early_exit_minutes_sum}")
             
     except Exception as e:
-        frappe.logger().error(f"Error calculating late minutes sum for {doc.employee}: {e}")
+        frappe.logger().error(f"Error calculating separate penalty sums for {doc.employee}: {e}")
         # Mettre des valeurs par défaut en cas d'erreur
         if hasattr(doc, 'total_late_minutes_sum'):
             doc.total_late_minutes_sum = 0
         if hasattr(doc, 'total_early_exit_minutes_sum'):
             doc.total_early_exit_minutes_sum = 0
+
 
 @frappe.whitelist()
 def recalculate_all_salary_slips():
@@ -156,12 +157,17 @@ def test_calculation(employee, start_date, end_date):
     Fonction de test pour vérifier les calculs manuellement
     """
     try:
-        # Test late minutes sum
-        late_minutes_result = frappe.db.sql("""
+        # Test separate penalty calculation
+        penalty_result = frappe.db.sql("""
             SELECT 
                 attendance_date,
                 total_late_minutes,
-                total_early_exit_minutes
+                total_early_exit_minutes,
+                late_entry_penalty_minutes,
+                early_exit_penalty_minutes,
+                late_entry_period_applied,
+                early_exit_period_applied,
+                applied_penalty_minutes
             FROM `tabAttendance`
             WHERE employee = %(employee)s
             AND attendance_date BETWEEN %(start_date)s AND %(end_date)s
@@ -173,16 +179,19 @@ def test_calculation(employee, start_date, end_date):
             'end_date': end_date
         }, as_dict=1)
         
-        total_late = sum(row.total_late_minutes or 0 for row in late_minutes_result)
-        total_early = sum(row.total_early_exit_minutes or 0 for row in late_minutes_result)
+        # Calculer les totaux séparés
+        total_late_penalty = sum(row.late_entry_penalty_minutes or 0 for row in penalty_result)
+        total_early_penalty = sum(row.early_exit_penalty_minutes or 0 for row in penalty_result)
+        total_penalty = sum(row.applied_penalty_minutes or 0 for row in penalty_result)
         
         return {
             "status": "success",
             "employee": employee,
             "period": f"{start_date} to {end_date}",
-            "total_late_minutes": total_late,
-            "total_early_exit_minutes": total_early,
-            "attendance_details": late_minutes_result
+            "total_late_penalty": total_late_penalty,
+            "total_early_penalty": total_early_penalty,
+            "total_penalty_minutes": total_penalty,
+            "attendance_details": penalty_result
         }
         
     except Exception as e:

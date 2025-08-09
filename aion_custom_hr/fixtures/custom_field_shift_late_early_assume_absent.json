@@ -35,6 +35,72 @@
     "fieldtype": "Check",
     "insert_after": "early_exit"
   },
+  {
+    "doctype": "Custom Field",
+    "name": "late_entry_penalty_minutes_attendance",
+    "dt": "Attendance",
+    "fieldname": "late_entry_penalty_minutes",
+    "label": "Late Entry Penalty (min)",
+    "fieldtype": "Int",
+    "insert_after": "early_exit_assume_as_absent",
+    "read_only": 1,
+    "description": "Auto-calculated penalty for late entry"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "early_exit_penalty_minutes_attendance",
+    "dt": "Attendance",
+    "fieldname": "early_exit_penalty_minutes",
+    "label": "Early Exit Penalty (min)",
+    "fieldtype": "Int",
+    "insert_after": "late_entry_penalty_minutes",
+    "read_only": 1,
+    "description": "Auto-calculated penalty for early exit"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "late_entry_period_applied_attendance",
+    "dt": "Attendance",
+    "fieldname": "late_entry_period_applied",
+    "label": "Late Entry Period Applied",
+    "fieldtype": "Int",
+    "insert_after": "early_exit_penalty_minutes",
+    "read_only": 1,
+    "description": "Which period was applied for late entry (1-4)"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "early_exit_period_applied_attendance",
+    "dt": "Attendance",
+    "fieldname": "early_exit_period_applied",
+    "label": "Early Exit Period Applied",
+    "fieldtype": "Int",
+    "insert_after": "late_entry_period_applied",
+    "read_only": 1,
+    "description": "Which period was applied for early exit (1-4)"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "applied_penalty_minutes_attendance",
+    "dt": "Attendance",
+    "fieldname": "applied_penalty_minutes",
+    "label": "Total Penalty (min)",
+    "fieldtype": "Int",
+    "insert_after": "early_exit_period_applied",
+    "read_only": 1,
+    "description": "Total penalty = Late Entry + Early Exit"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty_period_applied_attendance",
+    "dt": "Attendance",
+    "fieldname": "penalty_period_applied",
+    "label": "Max Period Applied",
+    "fieldtype": "Int",
+    "insert_after": "applied_penalty_minutes",
+    "read_only": 1,
+    "description": "Maximum period applied (1-4)"
+  },
 
   {
     "doctype": "Custom Field",
