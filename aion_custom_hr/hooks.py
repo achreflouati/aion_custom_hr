@@ -54,7 +54,8 @@ fixtures = [
 doctype_js = {
     "Attendance": "public/js/attendance_status.js",
     "Appraisal": "public/js/appraisal_monthly_score.js",
-    "Leave Application": "public/js/leave_application_task_review.js"
+    "Leave Application": "public/js/leave_application_task_review.js",
+    "Employee": "public/js/employee_contract.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
