@@ -34,5 +34,311 @@
     "label": "Early Exit Assume as Absent",
     "fieldtype": "Check",
     "insert_after": "early_exit"
+  },
+
+  {
+    "doctype": "Custom Field",
+    "name": "section_break_period_1",
+    "dt": "Shift Type",
+    "fieldname": "section_break_period_1",
+    "label": "Period 1 Configuration",
+    "fieldtype": "Section Break",
+    "insert_after": "early_exit_assume_as_absent"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "late_entry_assume_as_absent_1",
+    "dt": "Shift Type",
+    "fieldname": "late_entry_assume_as_absent_1",
+    "label": "Late Entry P1 (min)",
+    "fieldtype": "Int",
+    "insert_after": "section_break_period_1",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_1_1",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_1_1",
+    "fieldtype": "Column Break",
+    "insert_after": "late_entry_assume_as_absent_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "early_exit_assume_as_absent_1",
+    "dt": "Shift Type",
+    "fieldname": "early_exit_assume_as_absent_1",
+    "label": "Early Exit P1 (min)",
+    "fieldtype": "Int",
+    "insert_after": "column_break_penalty_1_1",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_1_2",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_1_2",
+    "fieldtype": "Column Break",
+    "insert_after": "early_exit_assume_as_absent_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "coefficient_penalty_period_1",
+    "dt": "Shift Type",
+    "fieldname": "coefficient_penalty_period_1",
+    "label": "Coefficient P1",
+    "fieldtype": "Float",
+    "insert_after": "column_break_penalty_1_2",
+    "description": "Penalty multiplier (ex: 40min * 1.5 = 60min)",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_1_3",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_1_3",
+    "fieldtype": "Column Break",
+    "insert_after": "coefficient_penalty_period_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty_period_1",
+    "dt": "Shift Type",
+    "fieldname": "penalty_period_1",
+    "label": "Penalty P1 (min)",
+    "fieldtype": "Int",
+    "insert_after": "column_break_penalty_1_3",
+    "description": "Auto-calculated penalty based on coefficient",
+    "read_only": 1,
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "section_break_period_2",
+    "dt": "Shift Type",
+    "fieldname": "section_break_period_2",
+    "label": "Period 2 Configuration",
+    "fieldtype": "Section Break",
+    "insert_after": "penalty_period_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "late_entry_assume_as_absent_2",
+    "dt": "Shift Type",
+    "fieldname": "late_entry_assume_as_absent_2",
+    "label": "Late Entry P2 (min)",
+    "fieldtype": "Int",
+    "insert_after": "section_break_period_2",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_2_1",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_2_1",
+    "fieldtype": "Column Break",
+    "insert_after": "late_entry_assume_as_absent_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "early_exit_assume_as_absent_2",
+    "dt": "Shift Type",
+    "fieldname": "early_exit_assume_as_absent_2",
+    "label": "Early Exit P2 (min)",
+    "fieldtype": "Int",
+    "insert_after": "column_break_penalty_2_1",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_2_2",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_2_2",
+    "fieldtype": "Column Break",
+    "insert_after": "early_exit_assume_as_absent_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "coefficient_penalty_period_2",
+    "dt": "Shift Type",
+    "fieldname": "coefficient_penalty_period_2",
+    "label": "Coefficient P2",
+    "fieldtype": "Float",
+    "insert_after": "column_break_penalty_2_2",
+    "description": "Penalty multiplier (ex: 40min * 1.5 = 60min)",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_2_3",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_2_3",
+    "fieldtype": "Column Break",
+    "insert_after": "coefficient_penalty_period_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty_period_2",
+    "dt": "Shift Type",
+    "fieldname": "penalty_period_2",
+    "label": "Penalty P2 (min)",
+    "fieldtype": "Int",
+    "insert_after": "column_break_penalty_2_3",
+    "description": "Auto-calculated penalty based on coefficient",
+    "read_only": 1,
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "section_break_period_3",
+    "dt": "Shift Type",
+    "fieldname": "section_break_period_3",
+    "label": "Period 3 Configuration",
+    "fieldtype": "Section Break",
+    "insert_after": "penalty_period_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "late_entry_assume_as_absent_3",
+    "dt": "Shift Type",
+    "fieldname": "late_entry_assume_as_absent_3",
+    "label": "Late Entry P3 (min)",
+    "fieldtype": "Int",
+    "insert_after": "section_break_period_3",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_3_1",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_3_1",
+    "fieldtype": "Column Break",
+    "insert_after": "late_entry_assume_as_absent_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "early_exit_assume_as_absent_3",
+    "dt": "Shift Type",
+    "fieldname": "early_exit_assume_as_absent_3",
+    "label": "Early Exit P3 (min)",
+    "fieldtype": "Int",
+    "insert_after": "column_break_penalty_3_1",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_3_2",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_3_2",
+    "fieldtype": "Column Break",
+    "insert_after": "early_exit_assume_as_absent_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "coefficient_penalty_period_3",
+    "dt": "Shift Type",
+    "fieldname": "coefficient_penalty_period_3",
+    "label": "Coefficient P3",
+    "fieldtype": "Float",
+    "insert_after": "column_break_penalty_3_2",
+    "description": "Penalty multiplier (ex: 40min * 1.5 = 60min)",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_3_3",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_3_3",
+    "fieldtype": "Column Break",
+    "insert_after": "coefficient_penalty_period_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty_period_3",
+    "dt": "Shift Type",
+    "fieldname": "penalty_period_3",
+    "label": "Penalty P3 (min)",
+    "fieldtype": "Int",
+    "insert_after": "column_break_penalty_3_3",
+    "description": "Auto-calculated penalty based on coefficient",
+    "read_only": 1,
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "section_break_period_4",
+    "dt": "Shift Type",
+    "fieldname": "section_break_period_4",
+    "label": "Period 4 Configuration",
+    "fieldtype": "Section Break",
+    "insert_after": "penalty_period_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "late_entry_assume_as_absent_4",
+    "dt": "Shift Type",
+    "fieldname": "late_entry_assume_as_absent_4",
+    "label": "Late Entry P4 (min)",
+    "fieldtype": "Int",
+    "insert_after": "section_break_period_4",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_4_1",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_4_1",
+    "fieldtype": "Column Break",
+    "insert_after": "late_entry_assume_as_absent_4"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "early_exit_assume_as_absent_4",
+    "dt": "Shift Type",
+    "fieldname": "early_exit_assume_as_absent_4",
+    "label": "Early Exit P4 (min)",
+    "fieldtype": "Int",
+    "insert_after": "column_break_penalty_4_1",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_4_2",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_4_2",
+    "fieldtype": "Column Break",
+    "insert_after": "early_exit_assume_as_absent_4"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "coefficient_penalty_period_4",
+    "dt": "Shift Type",
+    "fieldname": "coefficient_penalty_period_4",
+    "label": "Coefficient P4",
+    "fieldtype": "Float",
+    "insert_after": "column_break_penalty_4_2",
+    "description": "Penalty multiplier (ex: 40min * 1.5 = 60min)",
+    "columns": 3
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "column_break_penalty_4_3",
+    "dt": "Shift Type",
+    "fieldname": "column_break_penalty_4_3",
+    "fieldtype": "Column Break",
+    "insert_after": "coefficient_penalty_period_4"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty_period_4",
+    "dt": "Shift Type",
+    "fieldname": "penalty_period_4",
+    "label": "Penalty P4 (min)",
+    "fieldtype": "Int",
+    "insert_after": "column_break_penalty_4_3",
+    "description": "Auto-calculated penalty based on coefficient",
+    "read_only": 1,
+    "columns": 3
   }
 ]
+
