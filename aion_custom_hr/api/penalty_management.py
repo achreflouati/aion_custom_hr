@@ -18,6 +18,7 @@ def check_new_penalties_for_shift(shift_type, from_date, to_date):
                 a.employee_name,
                 a.attendance_date,
                 a.shift_type,
+                a.status,
                 a.late_entry_penalty_minutes,
                 a.early_exit_penalty_minutes,
                 a.total_late_minutes,
@@ -168,6 +169,7 @@ def create_single_penalty_management(employee, employee_name, from_date, to_date
             penalty_detail.attendance_date = penalty.get("attendance_date")
             penalty_detail.attendance_name = penalty.get("attendance_name")
             penalty_detail.shift_type = penalty.get("shift_type")
+            penalty_detail.status = penalty.get("status")
             penalty_detail.actual_late_minutes = penalty.get("total_late_minutes", 0)
             penalty_detail.actual_early_minutes = penalty.get("total_early_exit_minutes", 0)
             penalty_detail.original_late_penalty = penalty.get("late_entry_penalty_minutes", 0)
@@ -219,6 +221,7 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
                 name as attendance_name,
                 attendance_date,
                 shift_type,
+                status,
                 total_late_minutes,
                 total_early_exit_minutes,
                 late_entry_penalty_minutes,

@@ -145,6 +145,7 @@ function populate_penalty_details(frm, penalties) {
         
         // CHAMPS MANQUANTS AJOUTÉS :
         child.shift_type = penalty.shift_type;  // Shift Type
+        child.status = penalty.status || 'Present';  // Status de l'attendance
         child.actual_late_minutes = penalty.total_late_minutes || 0;  // Actual Late (min)
         child.actual_early_minutes = penalty.total_early_exit_minutes || 0;  // Actual Early (min)
         child.original_late_penalty = penalty.late_entry_penalty_minutes || 0;  // Original Late Penalty
