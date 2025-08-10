@@ -57,7 +57,8 @@ doctype_js = {
     "Leave Application": "public/js/leave_application_task_review.js",
     "Employee": "public/js/employee_contract.js",
     "Shift Type": "public/js/shift_type_penalty_calculator.js",
-    "penalty managment": "public/js/penalty_management.js"
+    "penalty managment": "public/js/penalty_management.js",
+    "Extra Hours": "public/js/extra_hours.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -167,6 +168,10 @@ doc_events = {
         "validate": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
         "before_save": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
         "on_update": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count"
+    },
+    "Extra Hours": {
+        "validate": "aion_custom_hr.extra_hours.update_extra_hours_totals",
+        "before_save": "aion_custom_hr.extra_hours.update_extra_hours_totals"
     }
 }
 

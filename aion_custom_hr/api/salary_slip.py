@@ -14,6 +14,9 @@ def calculate_assume_absent_count(doc, method=None):
     
     # Calculer les minutes de retard et sortie anticipée
     calculate_late_minutes_sum(doc)
+    
+    # Calculer les heures supplémentaires
+    calculate_extra_hours(doc)
 
 
 def calculate_assume_absent_count_only(doc):
@@ -152,6 +155,148 @@ def recalculate_all_salary_slips():
 
 
 @frappe.whitelist()
+def test_extra_hours_calculation(employee, start_date, end_date):
+    """
+    Fonction de test pour déboguer le calcul des heures supplémentaires
+    """
+    try:
+        # Test des données d'attendance
+        attendances = frappe.db.sql("""
+            SELECT 
+                a.attendance_date,
+                a.shift as shift_type,
+                a.in_time,
+                a.out_time,
+                s.start_time,
+                s.end_time,
+                a.status
+            FROM `tabAttendance` a
+            LEFT JOIN `tabShift Type` s ON a.shift = s.name
+            WHERE a.employee = %s
+            AND a.attendance_date BETWEEN %s AND %s
+            ORDER BY a.attendance_date
+        """, (employee, start_date, end_date), as_dict=True)
+        
+        result = {
+            "status": "success",
+            "employee": employee,
+            "period": f"{start_date} to {end_date}",
+            "total_attendances": len(attendances),
+            "attendances_with_times": 0,
+            "attendances_present": 0,
+            "attendances_with_shift": 0,
+            "total_extra_hours": 0.0,
+            "details": []
+        }
+        
+        for attendance in attendances:
+            detail = {
+                "date": str(attendance.attendance_date),
+                "status": attendance.status,
+                "shift_type": attendance.shift_type,
+                "in_time": str(attendance.in_time) if attendance.in_time else None,
+                "out_time": str(attendance.out_time) if attendance.out_time else None,
+                "shift_start": str(attendance.start_time) if attendance.start_time else None,
+                "shift_end": str(attendance.end_time) if attendance.end_time else None,
+                "error": None,
+                "extra_hours": 0.0
+            }
+            
+            # Compter les attendances par critère
+            if attendance.status == 'Present':
+                result["attendances_present"] += 1
+            if attendance.in_time and attendance.out_time:
+                result["attendances_with_times"] += 1
+            if attendance.shift_type and attendance.start_time and attendance.end_time:
+                result["attendances_with_shift"] += 1
+            
+            # Calculer les heures supplémentaires si toutes les conditions sont remplies
+            if (attendance.status == 'Present' and 
+                attendance.in_time and attendance.out_time and 
+                attendance.shift_type and attendance.start_time and attendance.end_time):
+                
+                try:
+                    # Parser les heures
+                    shift_start_str = str(attendance.start_time)
+                    shift_end_str = str(attendance.end_time)
+                    actual_in_str = str(attendance.in_time)
+                    actual_out_str = str(attendance.out_time)
+                    
+                    # Parser le shift start/end (format Time: HH:MM:SS)
+                    if len(shift_start_str.split(':')) == 3:
+                        shift_start_parts = shift_start_str.split(':')
+                        shift_start_minutes = int(shift_start_parts[0]) * 60 + int(shift_start_parts[1])
+                    else:
+                        detail["error"] = f"Invalid shift start time format: {shift_start_str}"
+                        result["details"].append(detail)
+                        continue
+                        
+                    if len(shift_end_str.split(':')) == 3:
+                        shift_end_parts = shift_end_str.split(':')
+                        shift_end_minutes = int(shift_end_parts[0]) * 60 + int(shift_end_parts[1])
+                    else:
+                        detail["error"] = f"Invalid shift end time format: {shift_end_str}"
+                        result["details"].append(detail)
+                        continue
+                    
+                    # Parser actual in/out time (format DateTime: YYYY-MM-DD HH:MM:SS)
+                    if ' ' in actual_in_str:
+                        actual_in_time_part = actual_in_str.split(' ')[1]
+                        actual_in_parts = actual_in_time_part.split(':')
+                        actual_in_minutes = int(actual_in_parts[0]) * 60 + int(actual_in_parts[1])
+                    else:
+                        detail["error"] = f"Invalid actual in time format: {actual_in_str}"
+                        result["details"].append(detail)
+                        continue
+                        
+                    if ' ' in actual_out_str:
+                        actual_out_time_part = actual_out_str.split(' ')[1]
+                        actual_out_parts = actual_out_time_part.split(':')
+                        actual_out_minutes = int(actual_out_parts[0]) * 60 + int(actual_out_parts[1])
+                    else:
+                        detail["error"] = f"Invalid actual out time format: {actual_out_str}"
+                        result["details"].append(detail)
+                        continue
+                    
+                    # Calculer les heures de travail prévues
+                    planned_work_minutes = shift_end_minutes - shift_start_minutes
+                    if planned_work_minutes < 0:  # Gestion du passage de minuit
+                        planned_work_minutes = (24 * 60) - shift_start_minutes + shift_end_minutes
+                    
+                    # Calculer les heures réellement travaillées
+                    actual_work_minutes = actual_out_minutes - actual_in_minutes
+                    if actual_work_minutes < 0:  # Gestion du passage de minuit
+                        actual_work_minutes = (24 * 60) - actual_in_minutes + actual_out_minutes
+                    
+                    # Calculer les heures supplémentaires
+                    if actual_work_minutes > planned_work_minutes:
+                        extra_minutes = actual_work_minutes - planned_work_minutes
+                        extra_hours_today = extra_minutes / 60.0
+                        detail["extra_hours"] = round(extra_hours_today, 2)
+                        result["total_extra_hours"] += extra_hours_today
+                    
+                    # Ajouter les détails de calcul
+                    detail["planned_minutes"] = planned_work_minutes
+                    detail["actual_minutes"] = actual_work_minutes
+                    detail["planned_hours"] = round(planned_work_minutes / 60.0, 2)
+                    detail["actual_hours"] = round(actual_work_minutes / 60.0, 2)
+                    
+                except Exception as calc_error:
+                    detail["error"] = f"Calculation error: {str(calc_error)}"
+            
+            result["details"].append(detail)
+        
+        result["total_extra_hours"] = round(result["total_extra_hours"], 2)
+        return result
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
+@frappe.whitelist()
 def test_calculation(employee, start_date, end_date):
     """
     Fonction de test pour vérifier les calculs manuellement
@@ -199,3 +344,154 @@ def test_calculation(employee, start_date, end_date):
             "status": "error",
             "message": str(e)
         }
+
+def calculate_extra_hours(doc, method=None):
+    """
+    Calcule les heures supplémentaires à partir des enregistrements Extra Hours approuvés
+    """
+    if not doc.employee or not doc.start_date or not doc.end_date:
+        return
+    
+    # Vérifier si le champ existe
+    if not hasattr(doc, 'extra_hours'):
+        frappe.logger().warning(f"Field 'extra_hours' not found in Salary Slip. Please install custom field fixture.")
+        return
+    
+    try:
+        # Importer la fonction depuis le module extra_hours
+        from aion_custom_hr.extra_hours import get_approved_extra_hours_for_salary_slip
+        
+        # Récupérer les heures supplémentaires approuvées pour cette période
+        approved_extra_hours = get_approved_extra_hours_for_salary_slip(
+            doc.employee, 
+            doc.start_date, 
+            doc.end_date
+        )
+        
+        # Mettre à jour le champ extra_hours
+        doc.extra_hours = round(approved_extra_hours, 2)
+        
+        frappe.logger().info(f"Extra hours from approved records for {doc.employee} ({doc.start_date} to {doc.end_date}): {doc.extra_hours} hours")
+        
+    except ImportError:
+        # Fallback vers l'ancien calcul automatique si le module extra_hours n'est pas disponible
+        frappe.logger().warning("Extra Hours module not found, falling back to automatic calculation")
+        calculate_extra_hours_automatic(doc)
+        
+    except Exception as e:
+        frappe.logger().error(f"Error calculating extra hours for {doc.employee}: {str(e)}")
+        doc.extra_hours = 0.0
+
+
+def calculate_extra_hours_automatic(doc):
+    """
+    Méthode de fallback pour calculer automatiquement les heures supplémentaires
+    (conserve l'ancien comportement)
+    """
+    try:
+        # Récupérer toutes les attendances de l'employé pour la période
+        attendances = frappe.db.sql("""
+            SELECT 
+                a.attendance_date,
+                a.shift as shift_type,
+                a.in_time,
+                a.out_time,
+                s.start_time,
+                s.end_time
+            FROM `tabAttendance` a
+            LEFT JOIN `tabShift Type` s ON a.shift = s.name
+            WHERE a.employee = %s
+            AND a.attendance_date BETWEEN %s AND %s
+            AND a.docstatus = 1
+            AND a.status = 'Present'
+            AND a.in_time IS NOT NULL
+            AND a.out_time IS NOT NULL
+            AND a.shift IS NOT NULL
+            AND s.start_time IS NOT NULL
+            AND s.end_time IS NOT NULL
+        """, (doc.employee, doc.start_date, doc.end_date), as_dict=True)
+        
+        total_extra_hours = 0.0
+        
+        frappe.logger().info(f"Processing {len(attendances)} attendances for automatic extra hours calculation")
+        
+        for attendance in attendances:
+            try:
+                # Parser les heures - formats différents
+                # shift_time est au format HH:MM:SS
+                # in_time/out_time sont au format YYYY-MM-DD HH:MM:SS
+                
+                shift_start_str = str(attendance.start_time)
+                shift_end_str = str(attendance.end_time)
+                
+                # Parser le shift start/end (format Time: HH:MM:SS)
+                if len(shift_start_str.split(':')) == 3:
+                    shift_start_parts = shift_start_str.split(':')
+                    shift_start_minutes = int(shift_start_parts[0]) * 60 + int(shift_start_parts[1])
+                else:
+                    frappe.logger().error(f"Invalid shift start time format: {shift_start_str}")
+                    continue
+                    
+                if len(shift_end_str.split(':')) == 3:
+                    shift_end_parts = shift_end_str.split(':')
+                    shift_end_minutes = int(shift_end_parts[0]) * 60 + int(shift_end_parts[1])
+                else:
+                    frappe.logger().error(f"Invalid shift end time format: {shift_end_str}")
+                    continue
+                
+                # Parser actual in/out time (format DateTime: YYYY-MM-DD HH:MM:SS)
+                actual_in_str = str(attendance.in_time)
+                actual_out_str = str(attendance.out_time)
+                
+                if ' ' in actual_in_str:
+                    actual_in_time_part = actual_in_str.split(' ')[1]  # Récupérer juste la partie time
+                    actual_in_parts = actual_in_time_part.split(':')
+                    actual_in_minutes = int(actual_in_parts[0]) * 60 + int(actual_in_parts[1])
+                else:
+                    frappe.logger().error(f"Invalid actual in time format: {actual_in_str}")
+                    continue
+                    
+                if ' ' in actual_out_str:
+                    actual_out_time_part = actual_out_str.split(' ')[1]  # Récupérer juste la partie time
+                    actual_out_parts = actual_out_time_part.split(':')
+                    actual_out_minutes = int(actual_out_parts[0]) * 60 + int(actual_out_parts[1])
+                else:
+                    frappe.logger().error(f"Invalid actual out time format: {actual_out_str}")
+                    continue
+                
+                # Calculer les heures de travail prévues
+                planned_work_minutes = shift_end_minutes - shift_start_minutes
+                if planned_work_minutes < 0:  # Gestion du passage de minuit
+                    planned_work_minutes = (24 * 60) - shift_start_minutes + shift_end_minutes
+                
+                # Calculer les heures réellement travaillées
+                actual_work_minutes = actual_out_minutes - actual_in_minutes
+                if actual_work_minutes < 0:  # Gestion du passage de minuit
+                    actual_work_minutes = (24 * 60) - actual_in_minutes + actual_out_minutes
+                
+                # Calculer les heures supplémentaires
+                if actual_work_minutes > planned_work_minutes:
+                    extra_minutes = actual_work_minutes - planned_work_minutes
+                    extra_hours_today = extra_minutes / 60.0
+                    total_extra_hours += extra_hours_today
+                    
+                    frappe.logger().info(f"Extra hours for {attendance.attendance_date}: "
+                                       f"Shift: {shift_start_str}-{shift_end_str} ({planned_work_minutes/60:.2f}h), "
+                                       f"Actual: {actual_in_time_part}-{actual_out_time_part} ({actual_work_minutes/60:.2f}h), "
+                                       f"Extra: {extra_hours_today:.2f}h")
+                else:
+                    frappe.logger().info(f"No extra hours for {attendance.attendance_date}: "
+                                       f"Planned: {planned_work_minutes/60:.2f}h, "
+                                       f"Actual: {actual_work_minutes/60:.2f}h")
+                
+            except Exception as date_error:
+                frappe.logger().error(f"Error processing attendance {attendance.attendance_date}: {str(date_error)}")
+                continue
+        
+        # Mettre à jour le champ extra_hours
+        doc.extra_hours = round(total_extra_hours, 2)
+        frappe.logger().info(f"Total extra hours calculated automatically for {doc.employee} ({doc.start_date} to {doc.end_date}): {doc.extra_hours} hours")
+        
+    except Exception as e:
+        frappe.logger().error(f"Error in automatic extra hours calculation for {doc.employee}: {str(e)}")
+        doc.extra_hours = 0.0

@@ -1,0 +1,163 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-attendance_date",
+    "dt": "Extra Hours Detail",
+    "fieldname": "attendance_date",
+    "fieldtype": "Date",
+    "label": "Attendance Date",
+    "reqd": 1,
+    "in_list_view": 1,
+    "insert_after": null
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-attendance_name",
+    "dt": "Extra Hours Detail",
+    "fieldname": "attendance_name",
+    "fieldtype": "Link",
+    "label": "Attendance",
+    "options": "Attendance",
+    "read_only": 1,
+    "insert_after": "attendance_date"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-shift_type",
+    "dt": "Extra Hours Detail",
+    "fieldname": "shift_type",
+    "fieldtype": "Link",
+    "label": "Shift Type",
+    "options": "Shift Type",
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "attendance_name"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-column_break_1",
+    "dt": "Extra Hours Detail",
+    "fieldname": "column_break_1",
+    "fieldtype": "Column Break",
+    "insert_after": "shift_type"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-check_in",
+    "dt": "Extra Hours Detail",
+    "fieldname": "check_in",
+    "fieldtype": "Datetime",
+    "label": "Check In",
+    "read_only": 1,
+    "insert_after": "column_break_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-check_out",
+    "dt": "Extra Hours Detail",
+    "fieldname": "check_out",
+    "fieldtype": "Datetime",
+    "label": "Check Out",
+    "read_only": 1,
+    "insert_after": "check_in"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-section_break_1",
+    "dt": "Extra Hours Detail",
+    "fieldname": "section_break_1",
+    "fieldtype": "Section Break",
+    "label": "Hours Calculation",
+    "insert_after": "check_out"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-worked_hours",
+    "dt": "Extra Hours Detail",
+    "fieldname": "worked_hours",
+    "fieldtype": "Float",
+    "label": "Worked Hours",
+    "precision": 2,
+    "read_only": 1,
+    "insert_after": "section_break_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-standard_hours",
+    "dt": "Extra Hours Detail",
+    "fieldname": "standard_hours",
+    "fieldtype": "Float",
+    "label": "Standard Hours",
+    "precision": 2,
+    "read_only": 1,
+    "insert_after": "worked_hours"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-column_break_2",
+    "dt": "Extra Hours Detail",
+    "fieldname": "column_break_2",
+    "fieldtype": "Column Break",
+    "insert_after": "standard_hours"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-extra_hours",
+    "dt": "Extra Hours Detail",
+    "fieldname": "extra_hours",
+    "fieldtype": "Float",
+    "label": "Extra Hours",
+    "precision": 2,
+    "in_list_view": 1,
+    "insert_after": "column_break_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-approved_extra_hours",
+    "dt": "Extra Hours Detail",
+    "fieldname": "approved_extra_hours",
+    "fieldtype": "Float",
+    "label": "Approved Extra Hours",
+    "precision": 2,
+    "in_list_view": 1,
+    "insert_after": "extra_hours"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-section_break_2",
+    "dt": "Extra Hours Detail",
+    "fieldname": "section_break_2",
+    "fieldtype": "Section Break",
+    "label": "Status & Comments",
+    "insert_after": "approved_extra_hours"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-status",
+    "dt": "Extra Hours Detail",
+    "fieldname": "status",
+    "fieldtype": "Select",
+    "label": "Status",
+    "options": "Pending\nApproved\nRejected",
+    "default": "Pending",
+    "in_list_view": 1,
+    "insert_after": "section_break_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-column_break_3",
+    "dt": "Extra Hours Detail",
+    "fieldname": "column_break_3",
+    "fieldtype": "Column Break",
+    "insert_after": "status"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-comments",
+    "dt": "Extra Hours Detail",
+    "fieldname": "comments",
+    "fieldtype": "Text",
+    "label": "Comments",
+    "insert_after": "column_break_3"
+  }
+]

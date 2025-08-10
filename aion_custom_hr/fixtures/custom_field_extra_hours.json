@@ -1,0 +1,199 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-employee",
+    "dt": "Extra Hours",
+    "fieldname": "employee",
+    "fieldtype": "Link",
+    "label": "Employee",
+    "options": "Employee",
+    "reqd": 1,
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "insert_after": "title"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-employee_name",
+    "dt": "Extra Hours",
+    "fieldname": "employee_name",
+    "fieldtype": "Data",
+    "label": "Employee Name",
+    "fetch_from": "employee.employee_name",
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "employee"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-column_break_1",
+    "dt": "Extra Hours",
+    "fieldname": "column_break_1",
+    "fieldtype": "Column Break",
+    "insert_after": "employee_name"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-from_date",
+    "dt": "Extra Hours",
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "From Date",
+    "reqd": 1,
+    "in_list_view": 1,
+    "insert_after": "column_break_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-to_date",
+    "dt": "Extra Hours",
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "To Date",
+    "reqd": 1,
+    "in_list_view": 1,
+    "insert_after": "from_date"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-section_break_1",
+    "dt": "Extra Hours",
+    "fieldname": "section_break_1",
+    "fieldtype": "Section Break",
+    "label": "Extra Hours Details",
+    "insert_after": "to_date"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-extra_hours_details",
+    "dt": "Extra Hours",
+    "fieldname": "extra_hours_details",
+    "fieldtype": "Table",
+    "label": "Extra Hours Details",
+    "options": "Extra Hours Detail",
+    "insert_after": "section_break_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-section_break_2",
+    "dt": "Extra Hours",
+    "fieldname": "section_break_2",
+    "fieldtype": "Section Break",
+    "label": "Summary",
+    "insert_after": "extra_hours_details"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-total_worked_hours",
+    "dt": "Extra Hours",
+    "fieldname": "total_worked_hours",
+    "fieldtype": "Float",
+    "label": "Total Worked Hours",
+    "precision": 2,
+    "read_only": 1,
+    "insert_after": "section_break_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-total_standard_hours",
+    "dt": "Extra Hours",
+    "fieldname": "total_standard_hours",
+    "fieldtype": "Float",
+    "label": "Total Standard Hours",
+    "precision": 2,
+    "read_only": 1,
+    "insert_after": "total_worked_hours"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-column_break_2",
+    "dt": "Extra Hours",
+    "fieldname": "column_break_2",
+    "fieldtype": "Column Break",
+    "insert_after": "total_standard_hours"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-total_extra_hours",
+    "dt": "Extra Hours",
+    "fieldname": "total_extra_hours",
+    "fieldtype": "Float",
+    "label": "Total Extra Hours",
+    "precision": 2,
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "column_break_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-total_approved_extra_hours",
+    "dt": "Extra Hours",
+    "fieldname": "total_approved_extra_hours",
+    "fieldtype": "Float",
+    "label": "Total Approved Extra Hours",
+    "precision": 2,
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "total_extra_hours"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-section_break_3",
+    "dt": "Extra Hours",
+    "fieldname": "section_break_3",
+    "fieldtype": "Section Break",
+    "label": "Approval",
+    "insert_after": "total_approved_extra_hours"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-approval_status",
+    "dt": "Extra Hours",
+    "fieldname": "approval_status",
+    "fieldtype": "Select",
+    "label": "Approval Status",
+    "options": "Draft\nPending Approval\nApproved\nRejected",
+    "default": "Draft",
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "insert_after": "section_break_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-approved_by",
+    "dt": "Extra Hours",
+    "fieldname": "approved_by",
+    "fieldtype": "Link",
+    "label": "Approved By",
+    "options": "User",
+    "read_only": 1,
+    "insert_after": "approval_status"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-column_break_3",
+    "dt": "Extra Hours",
+    "fieldname": "column_break_3",
+    "fieldtype": "Column Break",
+    "insert_after": "approved_by"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-approval_date",
+    "dt": "Extra Hours",
+    "fieldname": "approval_date",
+    "fieldtype": "Datetime",
+    "label": "Approval Date",
+    "read_only": 1,
+    "insert_after": "column_break_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-approval_comments",
+    "dt": "Extra Hours",
+    "fieldname": "approval_comments",
+    "fieldtype": "Text",
+    "label": "Approval Comments",
+    "insert_after": "approval_date"
+  }
+]

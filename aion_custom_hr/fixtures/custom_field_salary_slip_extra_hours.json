@@ -1,0 +1,15 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "Salary Slip-extra_hours",
+    "dt": "Salary Slip",
+    "fieldname": "extra_hours",
+    "fieldtype": "Float",
+    "label": "Extra Hours",
+    "precision": 2,
+    "read_only": 1,
+    "in_list_view": 1,
+    "description": "Overtime hours worked beyond scheduled shift hours",
+    "insert_after": "total_working_days"
+  }
+]
