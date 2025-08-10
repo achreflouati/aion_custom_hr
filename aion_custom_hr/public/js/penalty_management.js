@@ -100,16 +100,16 @@ function check_new_penalties(frm) {
                 
                 // Afficher statistiques
                 let msg = `
-                    <h4>Résumé des pénalités:</h4>
+                    <h4>Résumé des attendances:</h4>
                     <ul>
-                        <li><strong>Total attendances avec pénalités:</strong> ${data.total_attendances}</li>
+                        <li><strong>Total attendances:</strong> ${data.total_attendances}</li>
+                        <li><strong>Avec pénalités:</strong> ${data.total_penalty_attendances}</li>
+                        <li><strong>Sans pénalités:</strong> ${data.total_normal_attendances}</li>
                         <li><strong>Employés concernés:</strong> ${data.total_employees}</li>
                     </ul>
                     <h4>Totaux des pénalités:</h4>
                     <ul>
-                        <li><strong>Retard:</strong> ${data.total_penalty_minutes} minutes</li>
-                        <li><strong>Sortie anticipée:</strong> ${data.total_penalty_minutes} minutes</li>
-                        <li><strong>Total:</strong> ${data.total_penalty_minutes} minutes</li>
+                        <li><strong>Total pénalités:</strong> ${data.total_penalty_minutes} minutes</li>
                     </ul>
                 `;
                 
@@ -151,6 +151,10 @@ function populate_penalty_details(frm, penalties) {
         child.original_late_penalty = penalty.late_entry_penalty_minutes || 0;  // Original Late Penalty
         child.original_early_penalty = penalty.early_exit_penalty_minutes || 0;  // Original Early Penalty
         
+        // Heures d'entrée et sortie
+        child.in_time = penalty.in_time ? format_time(penalty.in_time) : '';
+        child.out_time = penalty.out_time ? format_time(penalty.out_time) : '';
+        
         // Pénalités calculées
         child.late_entry_penalty_minutes = penalty.late_entry_penalty_minutes || 0;
         child.early_exit_penalty_minutes = penalty.early_exit_penalty_minutes || 0;
@@ -168,9 +172,14 @@ function populate_penalty_details(frm, penalties) {
         // Coefficient utilisé
         child.coefficient_used = penalty.coefficient_used || 0;
         
-        // Statut de la pénalité
-        child.penalty_status = 'Applied';
-        child.has_penalty = 1;
+        // Statut de la pénalité basé sur la présence de pénalités
+        if (penalty.applied_penalty_minutes > 0 || penalty.late_entry_penalty_minutes > 0 || penalty.early_exit_penalty_minutes > 0) {
+            child.penalty_status = 'Applied';
+            child.has_penalty = 1;
+        } else {
+            child.penalty_status = 'No Penalty';
+            child.has_penalty = 0;
+        }
         
         // Commentaires/corrections
         child.correction_reason = penalty.correction_reason || '';
@@ -185,7 +194,10 @@ function populate_penalty_details(frm, penalties) {
     frm.refresh_field('penalty_details');
     
     frappe.show_alert({
-        message: __('Loaded {0} penalty records into details table', [penalties.length]),
+        message: __('Loaded {0} attendance records into details table ({1} with penalties, {2} normal)', 
+                  [penalties.length, 
+                   penalties.filter(p => (p.applied_penalty_minutes > 0 || p.late_entry_penalty_minutes > 0 || p.early_exit_penalty_minutes > 0)).length,
+                   penalties.filter(p => (p.applied_penalty_minutes == 0 && p.late_entry_penalty_minutes == 0 && p.early_exit_penalty_minutes == 0)).length]),
         indicator: 'green'
     });
 }

@@ -10,7 +10,7 @@ def check_new_penalties_for_shift(shift_type, from_date, to_date):
     """
     # shift_type = "shift tripoly"
     try:
-        # Récupérer seulement les attendances avec des pénalités
+        # Récupérer TOUTES les attendances (avec et sans pénalités)
         penalties = frappe.db.sql("""
             SELECT 
                 a.name as attendance_name,
@@ -19,17 +19,18 @@ def check_new_penalties_for_shift(shift_type, from_date, to_date):
                 a.attendance_date,
                 a.shift_type,
                 a.status,
-                a.late_entry_penalty_minutes,
-                a.early_exit_penalty_minutes,
-                a.total_late_minutes,
-                a.total_early_exit_minutes,
-                a.late_entry_period_applied,
-                a.early_exit_period_applied
+                a.in_time,
+                a.out_time,
+                COALESCE(a.late_entry_penalty_minutes, 0) as late_entry_penalty_minutes,
+                COALESCE(a.early_exit_penalty_minutes, 0) as early_exit_penalty_minutes,
+                COALESCE(a.total_late_minutes, 0) as total_late_minutes,
+                COALESCE(a.total_early_exit_minutes, 0) as total_early_exit_minutes,
+                COALESCE(a.late_entry_period_applied, 0) as late_entry_period_applied,
+                COALESCE(a.early_exit_period_applied, 0) as early_exit_period_applied
             FROM `tabAttendance` a
             WHERE a.shift_type = %s
             AND a.attendance_date BETWEEN %s AND %s
             AND a.docstatus = 1
-            AND (a.late_entry_penalty_minutes > 0 OR a.early_exit_penalty_minutes > 0)
             AND NOT EXISTS (
                 SELECT 1 FROM `tabpenalty managment` pm
                 WHERE pm.employee = a.employee
@@ -41,11 +42,15 @@ def check_new_penalties_for_shift(shift_type, from_date, to_date):
         """, (shift_type, from_date, to_date), as_dict=True)
         
         if not penalties:
-            return {"has_new_penalties": False}
+            return {"has_new_penalties": False, "has_attendances": False}
+        
+        # Séparer les attendances avec et sans pénalités
+        attendances_with_penalties = [p for p in penalties if (p.late_entry_penalty_minutes > 0 or p.early_exit_penalty_minutes > 0)]
+        attendances_without_penalties = [p for p in penalties if (p.late_entry_penalty_minutes == 0 and p.early_exit_penalty_minutes == 0)]
         
         # Calculer les statistiques
         total_employees = len(set(p.employee for p in penalties))
-        total_penalty_minutes = sum((p.late_entry_penalty_minutes or 0) + (p.early_exit_penalty_minutes or 0) for p in penalties)
+        total_penalty_minutes = sum((p.late_entry_penalty_minutes or 0) + (p.early_exit_penalty_minutes or 0) for p in attendances_with_penalties)
         
         # Grouper par employé
         employees_data = {}
@@ -55,6 +60,8 @@ def check_new_penalties_for_shift(shift_type, from_date, to_date):
                     "employee": penalty.employee,
                     "employee_name": penalty.employee_name,
                     "penalties": [],
+                    "attendances_with_penalties": [],
+                    "attendances_without_penalties": [],
                     "total_late_penalty": 0,
                     "total_early_penalty": 0,
                     "total_attendances": 0
@@ -62,16 +69,25 @@ def check_new_penalties_for_shift(shift_type, from_date, to_date):
             
             employees_data[penalty.employee]["penalties"].append(penalty)
             employees_data[penalty.employee]["total_attendances"] += 1
-            employees_data[penalty.employee]["total_late_penalty"] += penalty.late_entry_penalty_minutes or 0
-            employees_data[penalty.employee]["total_early_penalty"] += penalty.early_exit_penalty_minutes or 0
+            
+            if penalty.late_entry_penalty_minutes > 0 or penalty.early_exit_penalty_minutes > 0:
+                employees_data[penalty.employee]["attendances_with_penalties"].append(penalty)
+                employees_data[penalty.employee]["total_late_penalty"] += penalty.late_entry_penalty_minutes or 0
+                employees_data[penalty.employee]["total_early_penalty"] += penalty.early_exit_penalty_minutes or 0
+            else:
+                employees_data[penalty.employee]["attendances_without_penalties"].append(penalty)
         
         return {
-            "has_new_penalties": len(penalties) > 0,
+            "has_new_penalties": len(attendances_with_penalties) > 0,
+            "has_attendances": True,
             "penalties": penalties,
+            "attendances_with_penalties": attendances_with_penalties,
+            "attendances_without_penalties": attendances_without_penalties,
             "employees_data": employees_data,
             "total_employees": total_employees,
             "total_attendances": len(penalties),
-            "total_penalty_attendances": len(penalties),
+            "total_penalty_attendances": len(attendances_with_penalties),
+            "total_normal_attendances": len(attendances_without_penalties),
             "total_penalty_minutes": total_penalty_minutes,
             "shift_type": shift_type,
             "from_date": from_date,
@@ -207,8 +223,7 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
         conditions = [
             "employee = %s",
             "attendance_date BETWEEN %s AND %s",
-            "docstatus = 1",
-            "(late_entry_penalty_minutes > 0 OR early_exit_penalty_minutes > 0)"
+            "docstatus = 1"
         ]
         params = [employee, from_date, to_date]
         
@@ -222,13 +237,15 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
                 attendance_date,
                 shift_type,
                 status,
-                total_late_minutes,
-                total_early_exit_minutes,
-                late_entry_penalty_minutes,
-                early_exit_penalty_minutes,
-                late_entry_period_applied,
-                early_exit_period_applied,
-                applied_penalty_minutes
+                in_time,
+                out_time,
+                COALESCE(total_late_minutes, 0) as total_late_minutes,
+                COALESCE(total_early_exit_minutes, 0) as total_early_exit_minutes,
+                COALESCE(late_entry_penalty_minutes, 0) as late_entry_penalty_minutes,
+                COALESCE(early_exit_penalty_minutes, 0) as early_exit_penalty_minutes,
+                COALESCE(late_entry_period_applied, 0) as late_entry_period_applied,
+                COALESCE(early_exit_period_applied, 0) as early_exit_period_applied,
+                COALESCE(applied_penalty_minutes, 0) as applied_penalty_minutes
             FROM `tabAttendance`
             WHERE {' AND '.join(conditions)}
             ORDER BY attendance_date
@@ -250,14 +267,25 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
                 else:
                     penalty.coefficient_used = 0
         
+        # Séparer les attendances avec et sans pénalités
+        attendances_with_penalties = [p for p in penalties if (p.late_entry_penalty_minutes > 0 or p.early_exit_penalty_minutes > 0)]
+        attendances_without_penalties = [p for p in penalties if (p.late_entry_penalty_minutes == 0 and p.early_exit_penalty_minutes == 0)]
+        
         return {
             "success": True,
             "penalties": penalties,
+            "attendances_with_penalties": attendances_with_penalties,
+            "attendances_without_penalties": attendances_without_penalties,
             "total_records": len(penalties),
+            "total_penalty_records": len(attendances_with_penalties),
+            "total_normal_records": len(attendances_without_penalties),
             "summary": {
                 "total_late_penalty": sum(p.late_entry_penalty_minutes or 0 for p in penalties),
                 "total_early_penalty": sum(p.early_exit_penalty_minutes or 0 for p in penalties),
-                "total_penalty_minutes": sum(p.applied_penalty_minutes or 0 for p in penalties)
+                "total_penalty_minutes": sum(p.applied_penalty_minutes or 0 for p in penalties),
+                "total_attendances": len(penalties),
+                "penalty_attendances": len(attendances_with_penalties),
+                "normal_attendances": len(attendances_without_penalties)
             }
         }
         

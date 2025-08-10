@@ -47,11 +47,31 @@
   },
   {
     "doctype": "Custom Field",
+    "name": "Penalty Detail-in_time",
+    "dt": "Penalty Detail",
+    "fieldname": "in_time",
+    "fieldtype": "Time",
+    "label": "In Time",
+    "read_only": 1,
+    "insert_after": "status"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-out_time",
+    "dt": "Penalty Detail",
+    "fieldname": "out_time",
+    "fieldtype": "Time",
+    "label": "Out Time",
+    "read_only": 1,
+    "insert_after": "in_time"
+  },
+  {
+    "doctype": "Custom Field",
     "name": "Penalty Detail-column_break_1",
     "dt": "Penalty Detail",
     "fieldname": "column_break_1",
     "fieldtype": "Column Break",
-    "insert_after": "status"
+    "insert_after": "out_time"
   },
   {
     "doctype": "Custom Field",
