@@ -1,0 +1,180 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-attendance_date",
+    "dt": "Penalty Detail",
+    "fieldname": "attendance_date",
+    "fieldtype": "Date",
+    "label": "Attendance Date",
+    "reqd": 1,
+    "in_list_view": 1,
+    "insert_after": null
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-attendance_name",
+    "dt": "Penalty Detail",
+    "fieldname": "attendance_name",
+    "fieldtype": "Link",
+    "label": "Attendance",
+    "options": "Attendance",
+    "read_only": 1,
+    "insert_after": "attendance_date"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-shift_type",
+    "dt": "Penalty Detail",
+    "fieldname": "shift_type",
+    "fieldtype": "Link",
+    "label": "Shift Type",
+    "options": "Shift Type",
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "attendance_name"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-column_break_1",
+    "dt": "Penalty Detail",
+    "fieldname": "column_break_1",
+    "fieldtype": "Column Break",
+    "insert_after": "shift_type"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-actual_late_minutes",
+    "dt": "Penalty Detail",
+    "fieldname": "actual_late_minutes",
+    "fieldtype": "Int",
+    "label": "Actual Late (min)",
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "column_break_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-actual_early_minutes",
+    "dt": "Penalty Detail",
+    "fieldname": "actual_early_minutes",
+    "fieldtype": "Int",
+    "label": "Actual Early (min)",
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "actual_late_minutes"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-column_break_2",
+    "dt": "Penalty Detail",
+    "fieldname": "column_break_2",
+    "fieldtype": "Column Break",
+    "insert_after": "actual_early_minutes"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-original_late_penalty",
+    "dt": "Penalty Detail",
+    "fieldname": "original_late_penalty",
+    "fieldtype": "Int",
+    "label": "Original Late Penalty",
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "column_break_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-original_early_penalty",
+    "dt": "Penalty Detail",
+    "fieldname": "original_early_penalty",
+    "fieldtype": "Int",
+    "label": "Original Early Penalty",
+    "read_only": 1,
+    "in_list_view": 1,
+    "insert_after": "original_late_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-column_break_3",
+    "dt": "Penalty Detail",
+    "fieldname": "column_break_3",
+    "fieldtype": "Column Break",
+    "insert_after": "original_early_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-corrected_late_penalty",
+    "dt": "Penalty Detail",
+    "fieldname": "corrected_late_penalty",
+    "fieldtype": "Int",
+    "label": "Corrected Late Penalty",
+    "in_list_view": 1,
+    "insert_after": "column_break_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-corrected_early_penalty",
+    "dt": "Penalty Detail",
+    "fieldname": "corrected_early_penalty",
+    "fieldtype": "Int",
+    "label": "Corrected Early Penalty",
+    "in_list_view": 1,
+    "insert_after": "corrected_late_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-column_break_4",
+    "dt": "Penalty Detail",
+    "fieldname": "column_break_4",
+    "fieldtype": "Column Break",
+    "insert_after": "corrected_early_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-period_applied",
+    "dt": "Penalty Detail",
+    "fieldname": "period_applied",
+    "fieldtype": "Int",
+    "label": "Period Applied",
+    "read_only": 1,
+    "insert_after": "column_break_4"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-coefficient_used",
+    "dt": "Penalty Detail",
+    "fieldname": "coefficient_used",
+    "fieldtype": "Float",
+    "label": "Coefficient Used",
+    "read_only": 1,
+    "insert_after": "period_applied"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-section_break_notes",
+    "dt": "Penalty Detail",
+    "fieldname": "section_break_notes",
+    "fieldtype": "Section Break",
+    "label": "Notes",
+    "insert_after": "coefficient_used"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-correction_note",
+    "dt": "Penalty Detail",
+    "fieldname": "correction_note",
+    "fieldtype": "Small Text",
+    "label": "Correction Note",
+    "insert_after": "section_break_notes"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Penalty Detail-is_corrected",
+    "dt": "Penalty Detail",
+    "fieldname": "is_corrected",
+    "fieldtype": "Check",
+    "label": "Is Corrected",
+    "default": 0,
+    "insert_after": "correction_note"
+  }
+]

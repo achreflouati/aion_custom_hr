@@ -143,5 +143,181 @@ frappe.ui.form.on('Shift Type', {
                 'blue', true
             );
         }
+    },
+    
+    // Hook pour intercepter le processus d'attendance automatique
+    process_auto_attendance: function(frm) {
+        // Délai pour permettre au processus d'attendance de se terminer
+        setTimeout(() => {
+            check_and_create_penalty_management(frm);
+        }, 3000); // 3 secondes de délai
     }
 });
+
+// Fonction pour vérifier et créer les entrées Penalty Management
+function check_and_create_penalty_management(frm) {
+    // Récupérer les nouvelles attendances avec pénalités
+    frappe.call({
+        method: 'aion_custom_hr.api.penalty_management.check_new_penalties_for_shift',
+        args: {
+            shift_type: frm.doc.name,
+            from_date: frappe.datetime.add_days(frappe.datetime.get_today(), -7), // 7 jours en arrière
+            to_date: frappe.datetime.get_today()
+        },
+        callback: function(r) {
+            if (r.message && r.message.has_new_penalties) {
+                show_penalty_management_creation_dialog(frm, r.message);
+            }
+        }
+    });
+}
+
+// Dialogue pour créer les entrées Penalty Management
+function show_penalty_management_creation_dialog(frm, penalty_data) {
+    let dialog = new frappe.ui.Dialog({
+        title: __('New Penalties Detected'),
+        size: 'large',
+        fields: [
+            {
+                label: __('Penalty Summary'),
+                fieldtype: 'HTML',
+                fieldname: 'penalty_summary'
+            },
+            {
+                fieldtype: 'Section Break'
+            },
+            {
+                label: __('Create Penalty Management Records?'),
+                fieldtype: 'Check',
+                fieldname: 'create_records',
+                default: 1
+            },
+            {
+                label: __('Group by Employee'),
+                fieldtype: 'Check',
+                fieldname: 'group_by_employee',
+                default: 1
+            }
+        ],
+        primary_action_label: __('Create Records'),
+        primary_action: function() {
+            if (dialog.get_value('create_records')) {
+                create_penalty_management_records(frm, penalty_data, dialog.get_value('group_by_employee'));
+                dialog.hide();
+            }
+        }
+    });
+
+    // Construire le résumé HTML
+    let summary_html = build_penalty_summary_html(penalty_data);
+    dialog.fields_dict.penalty_summary.$wrapper.html(summary_html);
+
+    dialog.show();
+}
+
+// Construire le HTML du résumé des pénalités
+function build_penalty_summary_html(penalty_data) {
+    let html = `
+        <div class="penalty-summary">
+            <h5>${__('Penalties Detected')}</h5>
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>${__('Employee')}</th>
+                        <th>${__('Date')}</th>
+                        <th>${__('Late Penalty')}</th>
+                        <th>${__('Early Penalty')}</th>
+                        <th>${__('Total')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    penalty_data.penalties.forEach(penalty => {
+        html += `
+            <tr>
+                <td>${penalty.employee_name}</td>
+                <td>${penalty.attendance_date}</td>
+                <td>${penalty.late_entry_penalty_minutes || 0} min</td>
+                <td>${penalty.early_exit_penalty_minutes || 0} min</td>
+                <td>${(penalty.late_entry_penalty_minutes || 0) + (penalty.early_exit_penalty_minutes || 0)} min</td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+            <div class="mt-2">
+                <strong>${__('Total Employees')}: ${penalty_data.total_employees}</strong><br>
+                <strong>${__('Total Penalty Minutes')}: ${penalty_data.total_penalty_minutes}</strong>
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+// Créer les enregistrements Penalty Management
+function create_penalty_management_records(frm, penalty_data, group_by_employee) {
+    frappe.call({
+        method: 'aion_custom_hr.api.penalty_management.create_penalty_management_records',
+        args: {
+            shift_type: frm.doc.name,
+            penalty_data: penalty_data,
+            group_by_employee: group_by_employee
+        },
+        callback: function(r) {
+            if (r.message && r.message.success) {
+                frappe.msgprint({
+                    title: __('Success'),
+                    message: __('Created {0} Penalty Management records', [r.message.records_created]),
+                    indicator: 'green'
+                });
+                
+                // Proposer d'ouvrir les enregistrements créés
+                if (r.message.created_records && r.message.created_records.length > 0) {
+                    setTimeout(() => {
+                        show_created_records_dialog(r.message.created_records);
+                    }, 1000);
+                }
+            } else {
+                frappe.msgprint({
+                    title: __('Error'),
+                    message: r.message.error || __('Failed to create Penalty Management records'),
+                    indicator: 'red'
+                });
+            }
+        }
+    });
+}
+
+// Dialogue pour afficher les enregistrements créés
+function show_created_records_dialog(created_records) {
+    let dialog = new frappe.ui.Dialog({
+        title: __('Records Created'),
+        size: 'small',
+        fields: [
+            {
+                label: __('Open Records'),
+                fieldtype: 'HTML',
+                fieldname: 'records_list'
+            }
+        ]
+    });
+
+    let html = '<div class="records-list">';
+    created_records.forEach((record, index) => {
+        html += `
+            <p>
+                <a href="/app/penalty-managment/${record.name}" target="_blank">
+                    ${record.employee_name || record.name} - ${record.from_date} to ${record.to_date}
+                </a>
+            </p>
+        `;
+    });
+    html += '</div>';
+
+    dialog.fields_dict.records_list.$wrapper.html(html);
+    dialog.show();
+}

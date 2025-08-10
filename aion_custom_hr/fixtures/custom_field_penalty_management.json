@@ -1,0 +1,248 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-employee",
+    "dt": "penalty managment",
+    "fieldname": "employee",
+    "fieldtype": "Link",
+    "label": "Employee",
+    "options": "Employee",
+    "reqd": 1,
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "insert_after": "test"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-shift_type",
+    "dt": "penalty managment",
+    "fieldname": "shift_type",
+    "fieldtype": "Link",
+    "label": "Shift Type",
+    "options": "Shift Type",
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "insert_after": "employee"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-column_break_1",
+    "dt": "penalty managment",
+    "fieldname": "column_break_1",
+    "fieldtype": "Column Break",
+    "insert_after": "shift_type"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-from_date",
+    "dt": "penalty managment",
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "From Date",
+    "reqd": 1,
+    "in_list_view": 1,
+    "insert_after": "column_break_1"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-to_date",
+    "dt": "penalty managment",
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "To Date",
+    "reqd": 1,
+    "in_list_view": 1,
+    "insert_after": "from_date"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-section_break_summary",
+    "dt": "penalty managment",
+    "fieldname": "section_break_summary",
+    "fieldtype": "Section Break",
+    "label": "Penalty Summary",
+    "insert_after": "to_date"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-total_late_penalty",
+    "dt": "penalty managment",
+    "fieldname": "total_late_penalty",
+    "fieldtype": "Int",
+    "label": "Total Late Penalty (Minutes)",
+    "read_only": 1,
+    "insert_after": "section_break_summary"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-column_break_2",
+    "dt": "penalty managment",
+    "fieldname": "column_break_2",
+    "fieldtype": "Column Break",
+    "insert_after": "total_late_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-total_early_penalty",
+    "dt": "penalty managment",
+    "fieldname": "total_early_penalty",
+    "fieldtype": "Int",
+    "label": "Total Early Exit Penalty (Minutes)",
+    "read_only": 1,
+    "insert_after": "column_break_2"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-column_break_3",
+    "dt": "penalty managment",
+    "fieldname": "column_break_3",
+    "fieldtype": "Column Break",
+    "insert_after": "total_early_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-total_penalty_minutes",
+    "dt": "penalty managment",
+    "fieldname": "total_penalty_minutes",
+    "fieldtype": "Int",
+    "label": "Total Penalty Minutes",
+    "read_only": 1,
+    "insert_after": "column_break_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-section_break_actions",
+    "dt": "penalty managment",
+    "fieldname": "section_break_actions",
+    "fieldtype": "Section Break",
+    "label": "Actions",
+    "insert_after": "total_penalty_minutes"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-load_penalties_btn",
+    "dt": "penalty managment",
+    "fieldname": "load_penalties_btn",
+    "fieldtype": "Button",
+    "label": "Load Penalties",
+    "insert_after": "section_break_actions"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-column_break_4",
+    "dt": "penalty managment",
+    "fieldname": "column_break_4",
+    "fieldtype": "Column Break",
+    "insert_after": "load_penalties_btn"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-recalculate_btn",
+    "dt": "penalty managment",
+    "fieldname": "recalculate_btn",
+    "fieldtype": "Button",
+    "label": "Recalculate Penalties",
+    "insert_after": "column_break_4"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-section_break_details",
+    "dt": "penalty managment",
+    "fieldname": "section_break_details",
+    "fieldtype": "Section Break",
+    "label": "Penalty Details",
+    "insert_after": "recalculate_btn"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-penalty_details",
+    "dt": "penalty managment",
+    "fieldname": "penalty_details",
+    "fieldtype": "Table",
+    "label": "Penalty Details",
+    "options": "Penalty Detail",
+    "insert_after": "section_break_details"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-section_break_corrections",
+    "dt": "penalty managment",
+    "fieldname": "section_break_corrections",
+    "fieldtype": "Section Break",
+    "label": "Penalty Corrections",
+    "insert_after": "penalty_details"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-corrected_late_penalty",
+    "dt": "penalty managment",
+    "fieldname": "corrected_late_penalty",
+    "fieldtype": "Int",
+    "label": "Corrected Late Penalty (Minutes)",
+    "insert_after": "section_break_corrections"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-column_break_5",
+    "dt": "penalty managment",
+    "fieldname": "column_break_5",
+    "fieldtype": "Column Break",
+    "insert_after": "corrected_late_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-corrected_early_penalty",
+    "dt": "penalty managment",
+    "fieldname": "corrected_early_penalty",
+    "fieldtype": "Int",
+    "label": "Corrected Early Exit Penalty (Minutes)",
+    "insert_after": "column_break_5"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-column_break_6",
+    "dt": "penalty managment",
+    "fieldname": "column_break_6",
+    "fieldtype": "Column Break",
+    "insert_after": "corrected_early_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-total_corrected_penalty",
+    "dt": "penalty managment",
+    "fieldname": "total_corrected_penalty",
+    "fieldtype": "Int",
+    "label": "Total Corrected Penalty (Minutes)",
+    "read_only": 1,
+    "insert_after": "column_break_6"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-section_break_notes",
+    "dt": "penalty managment",
+    "fieldname": "section_break_notes",
+    "fieldtype": "Section Break",
+    "label": "Notes & Reason",
+    "insert_after": "total_corrected_penalty"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-correction_reason",
+    "dt": "penalty managment",
+    "fieldname": "correction_reason",
+    "fieldtype": "Small Text",
+    "label": "Correction Reason",
+    "insert_after": "section_break_notes"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "penalty managment-correction_status",
+    "dt": "penalty managment",
+    "fieldname": "correction_status",
+    "fieldtype": "Select",
+    "label": "Correction Status",
+    "options": "Draft\nApplied\nApproved\nRejected\nCancelled",
+    "default": "Draft",
+    "insert_after": "correction_reason"
+  }
+]
