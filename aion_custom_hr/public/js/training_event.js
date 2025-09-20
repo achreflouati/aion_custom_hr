@@ -54,6 +54,7 @@ function create_travel_requests(frm) {
                             doctype: 'Travel Request',
                             travel_type: 'International',
                             purpose_of_travel: 'Training Travel',
+                            custom_training_event_linked:frm.doc.name,
                             employee: emp.employee,
                             employee_name: emp.employee_name,
                             location: frm.doc.location,
