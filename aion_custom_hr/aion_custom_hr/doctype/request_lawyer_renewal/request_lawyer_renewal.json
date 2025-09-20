@@ -1,0 +1,177 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{company_document}-{YY}-{###}",
+ "creation": "2025-08-29 03:26:19.444312",
+ "default_email_template": "renewal test 1",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_9eul",
+  "amended_from",
+  "status",
+  "company_document",
+  "fulfilment_status",
+  "completed_email_send",
+  "section_break_iuzm",
+  "supplier",
+  "column_break_dduh",
+  "email",
+  "section_break_zosv",
+  "fulfilment_checklist",
+  "comments__instructions",
+  "final_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_9eul",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Request Lawyer Renewal",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "company_document",
+   "fieldtype": "Link",
+   "label": "Company Document",
+   "options": "Company Document Type"
+  },
+  {
+   "fetch_from": "supplier.email_id",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "section_break_iuzm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_dduh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nSent to Lawyer\nIn Progress\nCompleted",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_zosv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "comments__instructions",
+   "fieldtype": "Small Text",
+   "label": "Comments / Instructions"
+  },
+  {
+   "fieldname": "final_document",
+   "fieldtype": "Attach",
+   "label": "Final Document"
+  },
+  {
+   "fieldname": "fulfilment_checklist",
+   "fieldtype": "Table",
+   "label": "Fulfilment Checklist",
+   "options": "Renewal Fulfilment Checklist"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.fulfilment_checklist && doc.fulfilment_checklist.length > 0\r\n",
+   "fieldname": "fulfilment_status",
+   "fieldtype": "Check",
+   "label": "fulfilment status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Lawyer",
+   "link_filters": "[[\"Supplier\",\"supplier_group\",\"=\",\"lawyer\"]]",
+   "options": "Supplier",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "completed_email_send",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "completed email send"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Supplier Quotation",
+   "link_fieldname": "supplier"
+  },
+  {
+   "link_doctype": "Purchase Invoice",
+   "link_fieldname": "supplier"
+  },
+  {
+   "link_doctype": "Purchase Order",
+   "link_fieldname": "supplier"
+  }
+ ],
+ "modified": "2025-09-09 12:17:20.009099",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Request Lawyer Renewal",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1
+}

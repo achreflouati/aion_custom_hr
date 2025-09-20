@@ -1,7 +1,7 @@
 frappe.ui.form.on('Extra Hours', {
     refresh: function(frm) {
         // Ajouter le bouton "Load Attendances" si le document est nouveau
-        if (frm.is_new()) {
+        if (true) {
             frm.add_custom_button(__('Load Attendances'), function() {
                 load_attendances_for_extra_hours(frm);
             }, __('Actions'));

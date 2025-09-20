@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:document_company_type",
+ "creation": "2025-08-28 19:54:24.945930",
+ "default_email_template": "Request to the lawyer for renewing the company\u2019s documents",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_dl6r",
+  "amended_from",
+  "document_company_type",
+  "status",
+  "section_break_xjrp",
+  "id",
+  "column_break_iocx",
+  "attachement",
+  "section_break_uqvx",
+  "start_date",
+  "column_break_vlcb",
+  "end_date",
+  "image_section",
+  "attach_image_hant",
+  "column_break_gqhn"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_dl6r",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Company Document",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "document_company_type",
+   "fieldtype": "Link",
+   "label": "Document Company Type",
+   "options": "Company Document Type",
+   "unique": 1
+  },
+  {
+   "fieldname": "section_break_xjrp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "Document Serial Number"
+  },
+  {
+   "fieldname": "column_break_iocx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "attachement",
+   "fieldtype": "Attach",
+   "label": "Attachement"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status ",
+   "options": "Active\nInactive\nUnder Renewal"
+  },
+  {
+   "fieldname": "image_section",
+   "fieldtype": "Section Break",
+   "label": "Image "
+  },
+  {
+   "fieldname": "attach_image_hant",
+   "fieldtype": "Attach Image"
+  },
+  {
+   "fieldname": "section_break_uqvx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_vlcb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_gqhn",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-09-10 23:08:41.565645",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Company Document",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

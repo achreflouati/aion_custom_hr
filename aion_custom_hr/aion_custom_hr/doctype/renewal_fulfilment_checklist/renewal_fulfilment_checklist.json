@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2025-09-05 21:46:35.416008",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "fulfilled",
+  "cb_notes",
+  "requirement",
+  "sb_notes",
+  "notes",
+  "attach",
+  "filing_date",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "fulfilled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Fulfilled"
+  },
+  {
+   "fieldname": "cb_notes",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "requirement",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Requirement"
+  },
+  {
+   "fieldname": "sb_notes",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Notes"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Renewal Fulfilment Checklist",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "attach",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Attach",
+   "read_only_depends_on": "eval:!frappe.user.has_role('HR Manager')"
+  },
+  {
+   "fieldname": "filing_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Filing Date"
+  }
+ ],
+ "is_submittable": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-07 12:57:36.992678",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Renewal Fulfilment Checklist",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

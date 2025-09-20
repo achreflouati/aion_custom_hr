@@ -2,8 +2,11 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("penalty managment", {
+    onload: function(frm) {
+        frm.is_saving = false;
+    },
+
     refresh: function(frm) {
-        // Ajouter des boutons personnalisés
         if (frm.doc.docstatus === 0) {
             frm.add_custom_button(__("Load Penalties"), function() {
                 load_penalties_for_employee(frm);
@@ -14,10 +17,13 @@ frappe.ui.form.on("penalty managment", {
             });
         }
         
-        // Calculer automatiquement les totaux quand on charge le document
         if (frm.doc.penalty_details && frm.doc.penalty_details.length > 0) {
             calculate_totals_from_details(frm);
         }
+    },
+    
+    before_save: function(frm) {
+        calculate_totals_from_details(frm);
     },
     
     employee: function(frm) {
@@ -36,40 +42,101 @@ frappe.ui.form.on("penalty managment", {
         if (frm.doc.employee && frm.doc.from_date && frm.doc.to_date) {
             load_penalties_for_employee(frm);
         }
-    },
-    
-    load_penalties_btn: function(frm) {
-        load_penalties_for_employee(frm);
-    },
-    
-    recalculate_btn: function(frm) {
-        recalculate_penalty_totals(frm);
-    },
-    
-    corrected_late_penalty: function(frm) {
-        calculate_total_corrected_penalty(frm);
-    },
-    
-    corrected_early_penalty: function(frm) {
-        calculate_total_corrected_penalty(frm);
     }
 });
 
-// Event pour la table enfant
 frappe.ui.form.on("Penalty Detail", {
     corrected_late_penalty: function(frm, cdt, cdn) {
+        mark_as_modified(frm, cdt, cdn);
         calculate_totals_from_details(frm);
+        schedule_save(frm);
     },
     
     corrected_early_penalty: function(frm, cdt, cdn) {
+        mark_as_modified(frm, cdt, cdn);
         calculate_totals_from_details(frm);
+        schedule_save(frm);
     },
     
     penalty_details_remove: function(frm) {
         calculate_totals_from_details(frm);
+        schedule_save(frm);
+    },
+    
+    penalty_details_add: function(frm, cdt, cdn) {
+        schedule_save(frm);
     }
 });
 
+function mark_as_modified(frm, cdt, cdn) {
+    var row = frappe.get_doc(cdt, cdn);
+    frappe.model.set_value(cdt, cdn, "is_corrected", 1);
+}
+
+function schedule_save(frm) {
+    if (frm.is_saving) return;
+    
+    clearTimeout(frm.save_timeout);
+    frm.save_timeout = setTimeout(function() {
+        save_document(frm);
+    }, 2000);
+}
+
+function save_document(frm) {
+    if (frm.is_saving) {
+        frappe.show_alert({message: __('Saving in progress...'), indicator: 'blue'});
+        return;
+    }
+    
+    if (!frm.doc.employee) {
+        frappe.msgprint(__("Please select an employee first"));
+        return;
+    }
+    
+    frm.is_saving = true;
+    frappe.show_alert({message: __('Saving changes...'), indicator: 'blue'});
+    
+    frm.save().then(() => {
+        frappe.show_alert({message: __('Changes saved successfully'), indicator: 'green'});
+        frm.is_saving = false;
+        
+        after_save_update_salary_slips(frm);
+        
+    }).catch((error) => {
+        console.error('Save error:', error);
+        frappe.show_alert({message: __('Error saving changes'), indicator: 'red'});
+        frm.is_saving = false;
+    });
+}
+
+function after_save_update_salary_slips(frm) {
+    if (frm.doc.docstatus === 1) {
+        frappe.call({
+            method: 'aion_custom_hr.api.penalty_management.update_salary_slip_penalties',
+            args: {
+                employee: frm.doc.employee,
+                from_date: frm.doc.from_date,
+                to_date: frm.doc.to_date,
+                total_late_minutes: frm.doc.corrected_late_penalty || 0,
+                total_early_minutes: frm.doc.corrected_early_penalty || 0
+            },
+            callback: function(r) {
+                console.log("Salary slip update response:", r.message);
+                if (r.message && r.message.success) {
+                    frappe.show_alert({
+                        message: __('Updated {0} salary slip(s)', [r.message.total_updated]),
+                        indicator: 'green'
+                    });
+                } else {
+                    frappe.show_alert({
+                        message: __('Error updating salary slips: {0}', [r.message.error || 'Unknown error']),
+                        indicator: 'red'
+                    });
+                }
+            }
+        });
+    }
+}
 function load_penalties_for_employee(frm) {
     if (!frm.doc.employee) {
         frappe.msgprint(__("Please select an employee first"));
@@ -93,6 +160,9 @@ function load_penalties_for_employee(frm) {
                 populate_penalty_details(frm, r.message.penalties);
                 update_summary_totals(frm, r.message.summary);
                 frappe.msgprint(__("Loaded {0} penalty records", [r.message.total_records]));
+                
+                after_save_update_salary_slips(frm);
+                save_document(frm);
             } else {
                 frappe.msgprint(__("Error loading penalties: ") + (r.message.error || "Unknown error"));
             }
@@ -101,10 +171,8 @@ function load_penalties_for_employee(frm) {
 }
 
 function populate_penalty_details(frm, penalties) {
-    // Vider la table existante
     frm.clear_table("penalty_details");
     
-    // Ajouter les nouvelles lignes
     penalties.forEach(penalty => {
         let row = frm.add_child("penalty_details");
         row.attendance_date = penalty.attendance_date;
@@ -135,6 +203,8 @@ function update_summary_totals(frm, summary) {
     frm.set_value("corrected_late_penalty", summary.total_late_penalty);
     frm.set_value("corrected_early_penalty", summary.total_early_penalty);
     frm.set_value("total_corrected_penalty", summary.total_penalty_minutes);
+    
+    frm.refresh_fields();
 }
 
 function calculate_totals_from_details(frm) {
@@ -152,23 +222,14 @@ function calculate_totals_from_details(frm) {
         });
     }
     
-    // Mettre à jour les totaux originaux
     frm.set_value("total_late_penalty", total_original_late);
     frm.set_value("total_early_penalty", total_original_early);
     frm.set_value("total_penalty_minutes", total_original_late + total_original_early);
-    
-    // Mettre à jour les totaux corrigés
     frm.set_value("corrected_late_penalty", total_corrected_late);
     frm.set_value("corrected_early_penalty", total_corrected_early);
     frm.set_value("total_corrected_penalty", total_corrected_late + total_corrected_early);
     
     frm.refresh_fields();
-}
-
-function calculate_total_corrected_penalty(frm) {
-    let corrected_late = frm.doc.corrected_late_penalty || 0;
-    let corrected_early = frm.doc.corrected_early_penalty || 0;
-    frm.set_value("total_corrected_penalty", corrected_late + corrected_early);
 }
 
 function recalculate_penalty_totals(frm) {
@@ -187,7 +248,15 @@ function recalculate_penalty_totals(frm) {
                 frm.set_value("corrected_late_penalty", r.message.totals.corrected_late_penalty);
                 frm.set_value("corrected_early_penalty", r.message.totals.corrected_early_penalty);
                 frm.set_value("total_corrected_penalty", r.message.totals.total_corrected_penalty);
-                frappe.msgprint(__("Penalties recalculated successfully"));
+                
+                if (r.message.salary_slips_updated && r.message.salary_slips_updated.total_updated > 0) {
+                    frappe.msgprint(__("Penalties recalculated successfully. Updated {0} salary slip(s)", 
+                        [r.message.salary_slips_updated.total_updated]));
+                } else {
+                    frappe.msgprint(__("Penalties recalculated successfully. No salary slips found to update"));
+                }
+                
+                save_document(frm);
             } else {
                 frappe.msgprint(__("Error recalculating penalties: ") + (r.message.error || "Unknown error"));
             }

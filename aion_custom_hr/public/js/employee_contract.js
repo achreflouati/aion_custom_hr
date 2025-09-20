@@ -10,9 +10,18 @@ frappe.ui.form.on('Employee', {
             frm.add_custom_button(__('View Contracts'), function() {
                 view_employee_contracts(frm);
             }, __('Actions'));
+            frm.add_custom_button(__('Job Opening'), function() {
+                view_job_opening(frm);
+            }, __('Actions'));
         }
     }
 });
+
+function view_job_opening(frm) {
+    
+        frappe.set_route("list", "Job Opening");
+    
+}
 
 function create_employee_contract(frm) {
     if (!frm.doc.name) {

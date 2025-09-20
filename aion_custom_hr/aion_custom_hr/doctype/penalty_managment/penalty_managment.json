@@ -5,19 +5,31 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "test"
+  "test",
+  "amended_from"
  ],
  "fields": [
   {
    "fieldname": "test",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "test"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "penalty managment",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-10 15:32:49.700089",
+ "modified": "2025-09-11 21:42:00.248535",
  "modified_by": "Administrator",
  "module": "aion_custom_hr",
  "name": "penalty managment",

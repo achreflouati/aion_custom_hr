@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:RQT-{departement}-{##}",
+ "creation": "2025-09-08 13:09:04.387806",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "departement",
+  "request_date",
+  "requested_date_in",
+  "section_break_vtsd",
+  "skills",
+  "section_break_ovrz",
+  "reason",
+  "nominated_employees_tab",
+  "table_ylkt"
+ ],
+ "fields": [
+  {
+   "default": "Now",
+   "fieldname": "request_date",
+   "fieldtype": "Date",
+   "label": "Request Date ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "requested_date_in",
+   "fieldtype": "Date",
+   "label": "Requested date in"
+  },
+  {
+   "fieldname": "section_break_vtsd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "skills",
+   "fieldtype": "Table",
+   "label": "Skills",
+   "options": "Employee Skill"
+  },
+  {
+   "fieldname": "section_break_ovrz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason"
+  },
+  {
+   "fieldname": "departement",
+   "fieldtype": "Link",
+   "label": "D\u00e9partement ",
+   "options": "Department"
+  },
+  {
+   "fieldname": "nominated_employees_tab",
+   "fieldtype": "Tab Break",
+   "label": "Nominated employees"
+  },
+  {
+   "fieldname": "table_ylkt",
+   "fieldtype": "Table",
+   "options": "Nominated employees item"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-08 13:28:44.299545",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Employee transfer requests",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

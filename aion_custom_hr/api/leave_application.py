@@ -1,4 +1,5 @@
 import frappe
+import re
 
 def validate_leave_balance(doc, method=None):
     """
@@ -17,3 +18,39 @@ def validate_leave_balance(doc, method=None):
     
     if leave_balance is not None and requested_days > leave_balance:
         frappe.throw(f"Solde insuffisant : il vous reste {leave_balance} jours, vous avez demandé {requested_days}.")
+
+
+
+
+def before_save_leave_application(doc, method):
+    """
+    Récupère tous les emails des chefs de projet et les stocke dans un champ personnalisé
+    """
+    # Initialiser la liste des emails
+    emails = []
+    
+    # Vérifier si la table enfant existe et a des données
+    if hasattr(doc, 'employee_tasks') and doc.employee_tasks:
+        for task in doc.employee_tasks:
+            if task.project_manager_email:
+                # Valider l'email avant de l'ajouter
+                if is_valid_email(task.project_manager_email):
+                    emails.append(task.project_manager_email)
+                else:
+                    # Logger les emails invalides
+                    frappe.log_error(
+                        f"Email invalide pour le projet {task.project}: {task.project_manager_email}",
+                        "Leave Application Notification"
+                    )
+    
+    # Stocker dans le champ personnalisé (séparé par des virgules)
+    doc.all_project_managers_emails = ", ".join(emails) if emails else "Aucun email valide"
+
+def is_valid_email(email):
+    """
+    Valide le format d'un email
+    """
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return bool(re.match(pattern, email)) if email else False
+
+# ... autres fonctions leave_application ...

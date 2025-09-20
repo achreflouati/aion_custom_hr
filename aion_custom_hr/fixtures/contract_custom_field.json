@@ -1,0 +1,12 @@
+[
+  {
+    "doctype": "Custom Field",
+    "dt": "Contract",
+    "name": "Contract-requires_fuel_coupons",
+    "fieldname": "requires_fuel_coupons",
+    "label": "Requires Fuel Coupons",
+    "fieldtype": "Check",
+    "insert_after": "fulfilment_terms",
+    "description": "Check if this contract requires fuel coupons for the employee"
+  }
+]

@@ -64,15 +64,122 @@ def calculate_assume_absent_count_only(doc):
         doc.assume_as_absent_count = 0
 
 
-def calculate_late_minutes_sum(doc):
+def calculate_late_minutes_sum(doc, method=None):
     """
     Calcule la somme des pénalités séparées pour late entry et early exit
+    en tenant compte des corrections de penalty management
     """
     try:
-        # Calculer total_late_minutes_sum = somme des pénalités late entry
+        frappe.logger().info(f"=== Début du calcul des pénalités pour Salary Slip {doc.name} ===")
+        frappe.msgprint(f"=== Début du calcul des pénalités pour Salary Slip {doc.name} ===")
+        frappe.logger().info(f"Employé: {doc.employee}")
+        frappe.msgprint(f"Employé: {doc.employee}")
+        frappe.logger().info(f"Période: du {doc.start_date} au {doc.end_date}")
+        frappe.msgprint(f"Période: du {doc.start_date} au {doc.end_date}")
+
+        # D'abord vérifier s'il existe un penalty management validé pour cette période
+        frappe.logger().info("Recherche d'un penalty management validé...")
+        frappe.logger().info(f"Paramètres de recherche: employee={doc.employee}, start_date={doc.start_date}, end_date={doc.end_date}")
+        frappe.msgprint(f"Paramètres de recherche: employee={doc.employee}, start_date={doc.start_date}, end_date={doc.end_date}")  
+        # Vérifier d'abord si des penalty managements existent pour cet employé
+        all_penalties = frappe.db.sql("""
+            SELECT name, employee, from_date, to_date, docstatus, modified
+            FROM `tabpenalty managment`
+            WHERE employee = %(employee)s
+        """, {
+            'employee': doc.employee
+        }, as_dict=1)
+        
+        if all_penalties:
+            frappe.logger().info(f"Trouvé {len(all_penalties)} penalty managements pour l'employé:")
+            frappe.msgprint(f"Trouvé {len(all_penalties)} penalty managements pour l'employé:")
+            for p in all_penalties:
+                frappe.logger().info(f"- {p.name}: du {p.from_date} au {p.to_date}, status={p.docstatus}")
+        else:
+            frappe.logger().info("Aucun penalty management trouvé pour cet employé")
+            frappe.msgprint("Aucun penalty management trouvé pour cet employé")
+        
+        # Recherche du penalty management spécifique pour la période
+        # D'abord, vérifions tous les penalty managements pour cet employé sans filtres de date
+        all_penalties_detail = frappe.db.sql("""
+            SELECT 
+                name,
+                employee,
+                from_date,
+                to_date,
+                docstatus,
+                creation,
+                modified
+            FROM `tabpenalty managment`
+            WHERE employee = %(employee)s
+        """, {
+            'employee': doc.employee
+        }, as_dict=1)
+        
+        frappe.msgprint(f"Tous les penalty managements trouvés : {all_penalties_detail}")
+        
+        # Maintenant la requête principale avec des dates converties explicitement
+        penalty_mgmt = frappe.db.sql("""
+            SELECT 
+                name,
+                employee,
+                from_date,
+                to_date,
+                corrected_late_penalty as total_late,
+                corrected_early_penalty as total_early,
+                docstatus,
+                creation,
+                modified
+            FROM `tabpenalty managment`
+            WHERE employee = %(employee)s
+            AND DATE(from_date) <= DATE(%(end_date)s)
+            AND DATE(to_date) >= DATE(%(start_date)s)
+            
+            ORDER BY modified DESC
+            LIMIT 1
+        """, {
+            'employee': doc.employee,
+            'start_date': doc.start_date,
+            'end_date': doc.end_date
+        }, as_dict=1)
+        
+        frappe.msgprint(f"Paramètres de la requête: employee={doc.employee}, start_date={doc.start_date}, end_date={doc.end_date}")
+        frappe.msgprint(f"Résultat de la requête avec filtres de date: {penalty_mgmt}")
+        frappe.msgprint(f"penalty_mgmttessssssssssst: {penalty_mgmt}")
+
+        if penalty_mgmt:
+            frappe.logger().info(f"Penalty Management trouvé: {penalty_mgmt[0].name}")
+            frappe.msgprint(f"Penalty Management trouvé: {penalty_mgmt[0].name}")
+            frappe.logger().info(f"Détails: du {penalty_mgmt[0].from_date} au {penalty_mgmt[0].to_date}")
+            frappe.msgprint(f"Détails: du {penalty_mgmt[0].from_date} au {penalty_mgmt[0].to_date}")
+            frappe.logger().info(f"Status: {penalty_mgmt[0].docstatus}")
+            frappe.msgprint(f"Penalty Management trouvé: {penalty_mgmt[0].name}")
+            frappe.msgprint(f"Status: {penalty_mgmt[0].docstatus}")
+            
+            # Utiliser les valeurs corrigées du penalty management
+            if hasattr(doc, 'total_late_minutes_sum'):
+                doc.total_late_minutes_sum = int(penalty_mgmt[0].total_late or 0)
+                frappe.logger().info(f"Pénalités de retard depuis PM: {doc.total_late_minutes_sum} minutes")
+                frappe.msgprint(f"Penalite de retard { doc.total_late_minutes_sum} minut")
+                
+            if hasattr(doc, 'total_early_exit_minutes_sum'):
+                doc.total_early_exit_minutes_sum = int(penalty_mgmt[0].total_early or 0)
+                frappe.logger().info(f"Pénalités de sortie anticipée depuis PM: {doc.total_early_exit_minutes_sum} minutes")
+                
+            doc.penalty_note = f"Pénalités importées depuis {penalty_mgmt[0].name}"
+            frappe.logger().info("=== Fin du calcul des pénalités depuis Penalty Management ===")
+            return
+        else:
+            frappe.logger().info("Aucun Penalty Management trouvé pour la période spécifiée")
+
+        # Si pas de penalty management, calculer depuis les attendances
+        frappe.logger().info("Aucun Penalty Management trouvé, calcul depuis les attendances...")
+        
         if hasattr(doc, 'total_late_minutes_sum'):
+            frappe.logger().info("Calcul des pénalités de retard depuis les attendances...")
             late_penalty_sum = frappe.db.sql("""
-                SELECT COALESCE(SUM(late_entry_penalty_minutes), 0) as total
+                SELECT COALESCE(SUM(late_entry_penalty_minutes), 0) as total,
+                       COUNT(*) as total_records
                 FROM `tabAttendance`
                 WHERE employee = %(employee)s
                 AND attendance_date BETWEEN %(start_date)s AND %(end_date)s
@@ -84,12 +191,14 @@ def calculate_late_minutes_sum(doc):
             }, as_dict=1)
             
             doc.total_late_minutes_sum = int(late_penalty_sum[0].total) if late_penalty_sum else 0
-            frappe.logger().info(f"Salary Slip {doc.name}: Total late entry penalty: {doc.total_late_minutes_sum}")
-        
+            frappe.logger().info(f"Pénalités de retard trouvées: {doc.total_late_minutes_sum} minutes sur {late_penalty_sum[0].total_records} enregistrements")
+
         # Calculer total_early_exit_minutes_sum = somme des pénalités early exit
         if hasattr(doc, 'total_early_exit_minutes_sum'):
+            frappe.logger().info("Calcul des pénalités de sortie anticipée depuis les attendances...")
             early_penalty_sum = frappe.db.sql("""
-                SELECT COALESCE(SUM(early_exit_penalty_minutes), 0) as total
+                SELECT COALESCE(SUM(early_exit_penalty_minutes), 0) as total,
+                       COUNT(*) as total_records
                 FROM `tabAttendance`
                 WHERE employee = %(employee)s
                 AND attendance_date BETWEEN %(start_date)s AND %(end_date)s
@@ -101,7 +210,10 @@ def calculate_late_minutes_sum(doc):
             }, as_dict=1)
             
             doc.total_early_exit_minutes_sum = int(early_penalty_sum[0].total) if early_penalty_sum else 0
-            frappe.logger().info(f"Salary Slip {doc.name}: Total early exit penalty: {doc.total_early_exit_minutes_sum}")
+            frappe.logger().info(f"Pénalités de sortie anticipée trouvées: {doc.total_early_exit_minutes_sum} minutes sur {early_penalty_sum[0].total_records} enregistrements")
+            
+        frappe.logger().info(f"=== Fin du calcul des pénalités depuis les attendances ===")
+        frappe.logger().info(f"Total des pénalités: {doc.total_late_minutes_sum + doc.total_early_exit_minutes_sum} minutes")
             
     except Exception as e:
         frappe.logger().error(f"Error calculating separate penalty sums for {doc.employee}: {e}")

@@ -8,9 +8,7 @@ def check_new_penalties_for_shift(shift_type, from_date, to_date):
     """
     Vérifier s'il y a de nouvelles pénalités pour un shift type donné
     """
-    # shift_type = "shift tripoly"
     try:
-        # Récupérer TOUTES les attendances (avec et sans pénalités)
         penalties = frappe.db.sql("""
             SELECT 
                 a.name as attendance_name,
@@ -44,15 +42,12 @@ def check_new_penalties_for_shift(shift_type, from_date, to_date):
         if not penalties:
             return {"has_new_penalties": False, "has_attendances": False}
         
-        # Séparer les attendances avec et sans pénalités
         attendances_with_penalties = [p for p in penalties if (p.late_entry_penalty_minutes > 0 or p.early_exit_penalty_minutes > 0)]
         attendances_without_penalties = [p for p in penalties if (p.late_entry_penalty_minutes == 0 and p.early_exit_penalty_minutes == 0)]
         
-        # Calculer les statistiques
         total_employees = len(set(p.employee for p in penalties))
         total_penalty_minutes = sum((p.late_entry_penalty_minutes or 0) + (p.early_exit_penalty_minutes or 0) for p in attendances_with_penalties)
         
-        # Grouper par employé
         employees_data = {}
         for penalty in penalties:
             if penalty.employee not in employees_data:
@@ -110,7 +105,6 @@ def create_penalty_management_records(shift_type, penalty_data, group_by_employe
         created_records = []
         
         if group_by_employee:
-            # Créer un enregistrement par employé
             for employee_id, employee_data in penalty_data.get("employees_data", {}).items():
                 penalty_mgmt = create_single_penalty_management(
                     employee_data["employee"],
@@ -127,7 +121,6 @@ def create_penalty_management_records(shift_type, penalty_data, group_by_employe
                         "to_date": penalty_data["to_date"]
                     })
         else:
-            # Créer un enregistrement par jour/employé
             for penalty in penalty_data.get("penalties", []):
                 penalty_mgmt = create_single_penalty_management(
                     penalty["employee"],
@@ -159,12 +152,10 @@ def create_single_penalty_management(employee, employee_name, from_date, to_date
     Créer un seul enregistrement Penalty Management
     """
     try:
-        # Calculer les totaux
         total_late_penalty = sum(p.get("late_entry_penalty_minutes", 0) or 0 for p in penalties)
         total_early_penalty = sum(p.get("early_exit_penalty_minutes", 0) or 0 for p in penalties)
         total_penalty_minutes = total_late_penalty + total_early_penalty
         
-        # Créer l'enregistrement principal
         penalty_mgmt = frappe.get_doc({
             "doctype": "penalty managment",
             "employee": employee,
@@ -179,7 +170,6 @@ def create_single_penalty_management(employee, employee_name, from_date, to_date
             "correction_status": "Draft"
         })
         
-        # Ajouter les détails des pénalités
         for penalty in penalties:
             penalty_detail = penalty_mgmt.append("penalty_details", {})
             penalty_detail.attendance_date = penalty.get("attendance_date")
@@ -197,7 +187,6 @@ def create_single_penalty_management(employee, employee_name, from_date, to_date
                 penalty.get("early_exit_period_applied", 0) or 0
             )
             
-            # Récupérer le coefficient utilisé
             if penalty_detail.period_applied > 0:
                 shift_type_doc = frappe.get_doc("Shift Type", penalty.get("shift_type"))
                 coefficient_field = f"coefficient_penalty_period_{penalty_detail.period_applied}"
@@ -206,7 +195,6 @@ def create_single_penalty_management(employee, employee_name, from_date, to_date
             penalty_detail.is_corrected = 0
         
         penalty_mgmt.insert()
-        
         return penalty_mgmt
         
     except Exception as e:
@@ -219,7 +207,6 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
     Charger les pénalités pour une période donnée
     """
     try:
-        # Construire la requête SQL en fonction des paramètres
         conditions = [
             "employee = %s",
             "attendance_date BETWEEN %s AND %s",
@@ -253,7 +240,6 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
         
         penalties = frappe.db.sql(query, tuple(params), as_dict=True)
         
-        # Enrichir avec les coefficients utilisés
         for penalty in penalties:
             if penalty.shift_type:
                 shift_type_doc = frappe.get_doc("Shift Type", penalty.shift_type)
@@ -267,7 +253,6 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
                 else:
                     penalty.coefficient_used = 0
         
-        # Séparer les attendances avec et sans pénalités
         attendances_with_penalties = [p for p in penalties if (p.late_entry_penalty_minutes > 0 or p.early_exit_penalty_minutes > 0)]
         attendances_without_penalties = [p for p in penalties if (p.late_entry_penalty_minutes == 0 and p.early_exit_penalty_minutes == 0)]
         
@@ -294,22 +279,97 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
         return {"success": False, "error": str(e)}
 
 @frappe.whitelist()
-def recalculate_penalty_management(doc_name):
+def update_salary_slip_penalties(employee, from_date, to_date, total_late_minutes, total_early_minutes):
     """
-    Recalculer les totaux d'un Penalty Management
+    Version alternative plus directe pour mettre à jour les Salary Slips
     """
     try:
-        penalty_mgmt = frappe.get_doc("penalty managment", doc_name)
+        # Mettre à jour les salary slips de l'employé dans la période spécifiée
+        salary_slips = frappe.get_all("Salary Slip",
+            filters={
+                "employee": employee,
+                "start_date": [">=", from_date],
+                "end_date": ["<=", to_date],
+                "docstatus": ["<", 2]  # Only draft and submitted
+            },
+            pluck="name"
+        )
         
-        # Recalculer les totaux à partir des détails
-        total_late = sum(d.corrected_late_penalty or 0 for d in penalty_mgmt.penalty_details)
-        total_early = sum(d.corrected_early_penalty or 0 for d in penalty_mgmt.penalty_details)
+        for slip_name in salary_slips:
+            # Mettre à jour directement dans la base de données pour éviter les problèmes de workflow
+            frappe.db.set_value("Salary Slip", slip_name, {
+                "total_late_minutes_sum": total_late_minutes,
+                "total_early_exit_minutes_sum": total_early_minutes,
+                "modified": frappe.utils.now()
+            }, update_modified=True)
+            
+            # Recalculer les déductions
+            salary_slip = frappe.get_doc("Salary Slip", slip_name)
+            if hasattr(salary_slip, 'calculate_total_deduction'):
+                salary_slip.calculate_total_deduction()
+                salary_slip.save()
+            
+        # Commit les changements
+        frappe.db.commit()
         
-        penalty_mgmt.corrected_late_penalty = total_late
-        penalty_mgmt.corrected_early_penalty = total_early
-        penalty_mgmt.total_corrected_penalty = total_late + total_early
+        return {
+            "success": True,
+            "updated_salary_slips": salary_slips,
+            "total_updated": len(salary_slips),
+            "message": f"Updated all {len(salary_slips)} salary slips for employee {employee}"
+        }
         
-        penalty_mgmt.save()
+    except Exception as e:
+        frappe.db.rollback()
+        error_msg = f"Error updating salary slips: {str(e)}"
+        frappe.log_error(error_msg)
+        return {"success": False, "error": error_msg}
+@frappe.whitelist()
+def recalculate_penalty_management(doc_name=None, doc=None):
+    """
+    Recalculer les totaux d'un Penalty Management et mettre à jour les Salary Slips
+    """
+    try:
+        if not doc and doc_name:
+            doc = frappe.get_doc("penalty managment", doc_name)
+        elif not doc:
+            return {
+                "success": False,
+                "error": "Neither doc nor doc_name provided"
+            }
+            
+        frappe.logger().info(f"=== Début du recalcul des pénalités pour {doc.name} ===")
+        frappe.logger().info(f"Employé: {doc.employee}")
+        frappe.logger().info(f"Période: du {doc.from_date} au {doc.to_date}")
+        
+        # Calculer les nouveaux totaux
+        total_late = sum(d.corrected_late_penalty or 0 for d in doc.penalty_details)
+        total_early = sum(d.corrected_early_penalty or 0 for d in doc.penalty_details)
+        
+        frappe.logger().info(f"Nouveaux totaux calculés:")
+        frappe.logger().info(f"- Total retards: {total_late} minutes")
+        frappe.logger().info(f"- Total sorties anticipées: {total_early} minutes")
+        
+        # Mettre à jour les totaux
+        doc.corrected_late_penalty = total_late
+        doc.corrected_early_penalty = total_early
+        doc.total_corrected_penalty = total_late + total_early
+        
+        # Sauvegarder les modifications
+        doc.db_update()
+        frappe.db.commit()
+        
+        frappe.logger().info("Document Penalty Management mis à jour")
+        
+        # Mettre à jour les Salary Slips
+        frappe.logger().info("Mise à jour des Salary Slips...")
+        update_result = update_salary_slip_penalties(
+            doc.employee,
+            doc.from_date,
+            doc.to_date,
+            total_late,
+            total_early
+        )
         
         return {
             "success": True,
@@ -318,7 +378,8 @@ def recalculate_penalty_management(doc_name):
                 "corrected_late_penalty": total_late,
                 "corrected_early_penalty": total_early,
                 "total_corrected_penalty": total_late + total_early
-            }
+            },
+            "salary_slips_updated": update_result
         }
         
     except Exception as e:

@@ -58,10 +58,13 @@ doctype_js = {
     "Employee": "public/js/employee_contract.js",
     "Shift Type": "public/js/shift_type_penalty_calculator.js",
     "penalty managment": "public/js/penalty_management.js",
-    "Extra Hours": "public/js/extra_hours.js"
+    "Extra Hours": "public/js/extra_hours.js",
+    "Contract": "public/js/contract_custom.js",
+    "Payroll Entry": "public/js/Payroll_Entry.js",
+    "Training Event": "public/js/training_event.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
-# doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
+# doctype_treze_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
 # Svg Icons
@@ -162,12 +165,26 @@ doc_events = {
         "validate": "aion_custom_hr.api.attendance_status.set_attendance_status"
     },
     "Leave Application": {
-        "validate": "aion_custom_hr.api.leave_application.validate_leave_balance"
+        "validate": "aion_custom_hr.api.leave_application.validate_leave_balance",
+        "before_save": "aion_custom_hr.api.leave_application.before_save_leave_application"
     },
     "Salary Slip": {
-        "validate": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
-        "before_save": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
-        "on_update": "aion_custom_hr.api.salary_slip.calculate_assume_absent_count"
+        "validate": [
+            "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
+            "aion_custom_hr.api.salary_slip.calculate_late_minutes_sum"
+        ],
+        "before_save": [
+            "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
+            "aion_custom_hr.api.salary_slip.calculate_late_minutes_sum"
+        ],
+        "on_update": [
+            "aion_custom_hr.api.salary_slip.calculate_assume_absent_count",
+            "aion_custom_hr.api.salary_slip.calculate_late_minutes_sum"
+        ]
+    },
+    "penalty managment": {
+        "on_submit": "aion_custom_hr.api.penalty_management.update_salary_slip_penalties",
+        "on_update_after_submit": "aion_custom_hr.api.penalty_management.update_salary_slip_penalties"
     },
     "Extra Hours": {
         "validate": "aion_custom_hr.extra_hours.update_extra_hours_totals",

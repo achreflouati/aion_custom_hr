@@ -1,0 +1,115 @@
+frappe.ui.form.on("Training Event", {
+    refresh: function(frm) {
+        // Ajouter les boutons seulement si le document n'est pas nouveau et est soumis
+        if (!frm.is_new() && frm.doc.docstatus === 1) {
+            if (frm.doc.travel_request_needs) {
+                // Vérifier si des Travel Requests ont déjà été créés
+                let all_requests_created = frm.doc.__travel_requests_created || false;
+                
+                if (!all_requests_created) {
+                    // Bouton pour créer les Travel Requests
+                    frm.add_custom_button(__('Create Travel Requests'), function() {
+                        create_travel_requests(frm);
+                    }, __('Create'));
+                } else {
+                    // Bouton désactivé si déjà créés
+                    frm.add_custom_button(__('Travel Requests Created'), function() {
+                        frappe.show_alert({
+                            message: __('Travel Requests have already been created for all employees'),
+                            indicator: 'blue'
+                        });
+                    }).addClass('btn-disabled');
+                }
+            }
+        }
+    }
+});
+
+// Fonction pour créer les Travel Requests - VERSION CORRIGÉE
+function create_travel_requests(frm) {
+    frappe.confirm(
+        __('Create Travel Requests for all {0} employees?', [frm.doc.employees.length]),
+        function() {
+            // Oui, créer les demandes
+            let created_count = 0;
+            const total_employees = frm.doc.employees ? frm.doc.employees.length : 0;
+            
+            if (total_employees === 0) {
+                frappe.msgprint(__('No employees found in this training event'));
+                return;
+            }
+            
+            frappe.show_alert({
+                message: __('Creating Travel Requests...'),
+                indicator: 'blue'
+            });
+            
+            // Créer un Travel Request pour chaque employé - METHODE CORRIGEE
+            frm.doc.employees.forEach(function(emp) {
+                // Utiliser la méthode correcte pour créer un nouveau document
+                frappe.call({
+                    method: 'frappe.client.insert',
+                    args: {
+                        doc: {
+                            doctype: 'Travel Request',
+                            travel_type: 'International',
+                            purpose_of_travel: 'Training Travel',
+                            employee: emp.employee,
+                            employee_name: emp.employee_name,
+                            location: frm.doc.location,
+                            from_date: frm.doc.start_time,
+                            to_date: frm.doc.end_time,
+                            description: frm.doc.description || 'Training Event: ' + frm.doc.event_name,
+                            company: frm.doc.company,
+                            training_event: frm.doc.name,
+                            event_name: frm.doc.event_name
+                        }
+                    },
+                    callback: function(r) {
+                        if (r.message) {
+                            created_count++;
+                            frappe.show_alert({
+                                message: __('Created for {0}', [emp.employee_name]),
+                                indicator: 'green'
+                            });
+                            
+                            if (created_count === total_employees) {
+                                // Marquer que tous les Travel Requests ont été créés
+                                frappe.call({
+                                    method: 'frappe.client.set_value',
+                                    args: {
+                                        doctype: 'Training Event',
+                                        name: frm.doc.name,
+                                        fieldname: '__travel_requests_created',
+                                        value: 1
+                                    },
+                                    callback: function() {
+                                        frm.reload_doc();
+                                        frappe.show_alert({
+                                            message: __('{0} Travel Requests created successfully', [total_employees]),
+                                            indicator: 'green'
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error creating Travel Request:', error);
+                        frappe.show_alert({
+                            message: __('Error creating for {0}', [emp.employee_name]),
+                            indicator: 'red'
+                        });
+                    }
+                });
+            });
+        },
+        function() {
+            // Non, annuler
+            frappe.show_alert({
+                message: __('Cancelled'),
+                indicator: 'red'
+            });
+        }
+    );
+}

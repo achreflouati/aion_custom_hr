@@ -1,0 +1,232 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-30 06:32:33.435721",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "is_new_employee",
+  "existing_employee",
+  "employee",
+  "employee_name",
+  "department",
+  "designation",
+  "column_break_iqqi",
+  "status",
+  "from_date",
+  "to_date",
+  "section_break_chqc",
+  "fulfillment_form",
+  "section_break1",
+  "working_hours",
+  "hourly_rate",
+  "column_break1",
+  "total_hours",
+  "contract_value",
+  "section_break2",
+  "requires_fuel_coupons",
+  "number_of_coupons",
+  "coupon_value",
+  "total_coupon_value",
+  "notify_hr_fuel",
+  "section_break3",
+  "employee_signature",
+  "hr_approval",
+  "gm_approval"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Link",
+   "label": "Designation",
+   "options": "Designation"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "Contract Start Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "Contract End Date"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nSigned by Employee\nApproved by HR\nApproved by GM\nActive"
+  },
+  {
+   "fieldname": "section_break1",
+   "fieldtype": "Section Break",
+   "label": "Fulfillment Section"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_new_employee",
+   "fieldtype": "Check",
+   "label": "Is New Employee?"
+  },
+  {
+   "default": "0",
+   "fieldname": "existing_employee",
+   "fieldtype": "Check",
+   "label": "Existing Employee?"
+  },
+  {
+   "depends_on": "eval:doc.is_new_employee==1",
+   "fieldname": "fulfillment_form",
+   "fieldtype": "Link",
+   "label": "Fulfillment Form",
+   "options": "Contract Template Fulfilment Terms"
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "working_hours",
+   "fieldtype": "Int",
+   "label": "Working Hours per Week"
+  },
+  {
+   "fieldname": "hourly_rate",
+   "fieldtype": "Currency",
+   "label": "Hourly Rate"
+  },
+  {
+   "fieldname": "total_hours",
+   "fieldtype": "Int",
+   "label": "Total Estimated Hours"
+  },
+  {
+   "fieldname": "contract_value",
+   "fieldtype": "Currency",
+   "label": "Contract Value",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break2",
+   "fieldtype": "Section Break",
+   "label": "Fuel Coupons"
+  },
+  {
+   "default": "0",
+   "fieldname": "requires_fuel_coupons",
+   "fieldtype": "Check",
+   "label": "Does Job Require Fuel Coupons?"
+  },
+  {
+   "depends_on": "eval:doc.requires_fuel_coupons==1",
+   "fieldname": "number_of_coupons",
+   "fieldtype": "Int",
+   "label": "Number of Coupons"
+  },
+  {
+   "depends_on": "eval:doc.requires_fuel_coupons==1",
+   "fieldname": "coupon_value",
+   "fieldtype": "Currency",
+   "label": "Coupon Value per Unit"
+  },
+  {
+   "depends_on": "eval:doc.requires_fuel_coupons==1",
+   "fieldname": "total_coupon_value",
+   "fieldtype": "Currency",
+   "label": "Total Coupon Value",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "notify_hr_fuel",
+   "fieldtype": "Check",
+   "label": "Notify HR for Fuel Coupons"
+  },
+  {
+   "fieldname": "section_break3",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "employee_signature",
+   "fieldtype": "Attach",
+   "label": "Employee Signature"
+  },
+  {
+   "default": "0",
+   "fieldname": "hr_approval",
+   "fieldtype": "Check",
+   "label": "HR Approval"
+  },
+  {
+   "default": "0",
+   "fieldname": "gm_approval",
+   "fieldtype": "Check",
+   "label": "General Manager Approval"
+  },
+  {
+   "fieldname": "column_break_iqqi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_chqc",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-30 06:42:23.536297",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Part-time Employment Contract",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

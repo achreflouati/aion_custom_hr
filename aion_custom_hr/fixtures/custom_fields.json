@@ -7,7 +7,7 @@
     "label": "Years of Experience",
     "fieldtype": "Int",
     "insert_after": "date_of_joining",
-    "description": "Nombre d'années d'expérience professionnelle",
+    "description": "Number of years of professional experience",
     "reqd": 0,
     "in_list_view": 1,
     "in_standard_filter": 1
@@ -47,6 +47,35 @@
     "options": "Department Approver",
     "insert_after": "work_assignment_approver",
     "description": "Liste des approbateurs pour les formations",
+    "reqd": 0,
+    "in_list_view": 0
+  },
+  {
+  
+    "doctype": "Custom Field",
+    "name": "all_project_managers_emails",
+    "dt": "Leave Application",
+    "fieldname": "all_project_managers_emails",
+    "label": "Project Managers Emails",
+    "fieldtype": "Data",
+    "insert_after": "amended_from",
+    "description": "Emails of all project managers",
+    "reqd": 0,
+    "read_only": 1,
+    "hidden": 1,
+    "in_list_view": 0,
+    "in_standard_filter": 0
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "travel_request_needs",
+    "dt": "Training Event",
+    "fieldname": "travel_request_needs",
+    "label": "Travel Request Needs",
+    "fieldtype": "Check",
+    "insert_after": "has_certificate",
+    
+    "description": "please check if travel request is needed for this training",
     "reqd": 0,
     "in_list_view": 0
   }

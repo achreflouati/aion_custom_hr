@@ -106,6 +106,9 @@ function load_employee_tasks(frm) {
                     child.employee = task.employee || frm.doc.employee;
                     child.department = task.department || '';
                     child.work_assignment_approver = task.work_assignment_approver || '';
+                    child.project = task.project || ''; // Nom du projet
+                    child.project_manager = task.project_manager || ''; // Chef de projet
+                    child.project_manager_email = task.project_manager_email || ''; // Email du chef de projet
                     
                     console.log('Child filled:', child);
                 });

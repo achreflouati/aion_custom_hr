@@ -1,0 +1,41 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2025-09-08 01:38:13.481469",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "coupon_date",
+    "coupon_value"
+  ],
+  "fields": [
+    {
+      "fieldname": "coupon_date",
+      "fieldtype": "Date",
+      "label": "Date",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "coupon_value",
+      "fieldtype": "Currency",
+      "label": "Value",
+      "reqd": 1,
+      "in_list_view": 1
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "istable": 1,
+  "links": [],
+  "modified": "2025-09-08 01:38:13.481469",
+  "modified_by": "Administrator",
+  "module": "aion_custom_hr",
+  "name": "Fuel Coupon Item",
+  "owner": "Administrator",
+  "permissions": [],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": []
+}

@@ -1,0 +1,43 @@
+{
+ "actions": [],
+ "creation": "2025-09-07 17:27:59.381275",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "personal_documents",
+  "column_break_2",
+  "value"
+ ],
+ "fields": [
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "value",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Value / Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "personal_documents",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Personal Documents",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-07 17:37:39.866119",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Personal Documents",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -5,6 +5,172 @@ from frappe import _
 @frappe.whitelist()
 def get_employee_tasks(employee):
     """
+    Récupère toutes les tâches actives d'un employé avec les informations de projet
+    et l'email du chef de projet (via custom_project_manager__)
+    """
+    if not employee:
+        return []
+    
+    # Récupérer les tâches de l'employé avec les informations de projet
+    tasks = frappe.db.sql("""
+        SELECT 
+            t.name,
+            t.subject,
+            t.status,
+            t.priority,
+            t.progress,
+            t.exp_start_date,
+            t.exp_end_date,
+            t.department,
+            t.employee,
+            t.project,  -- Projet associé
+            p.project_name,  -- Nom du projet
+            p.custom_project_manager__,  -- Chef de projet (ID employé)
+            emp.employee_name as project_manager_name,  -- Nom du chef de projet
+            emp.user_id as project_manager_user_id,  -- User ID du chef de projet
+            u.email as project_manager_email  -- Email du chef de projet
+        FROM 
+            `tabTask manger HR` t
+        LEFT JOIN 
+            `tabProject` p ON t.project = p.name
+        LEFT JOIN
+            `tabEmployee` emp ON p.custom_project_manager__ = emp.name
+        LEFT JOIN
+            `tabUser` u ON emp.user_id = u.name
+        WHERE 
+            t.employee = %(employee)s
+            AND t.status NOT IN ('Completed', 'Cancelled')
+            AND t.docstatus != 2
+        ORDER BY 
+            t.priority DESC, t.exp_end_date ASC
+    """, {
+        'employee': employee
+    }, as_dict=1)
+    
+    # Pour chaque tâche, déterminer l'approbateur (toujours recalculé)
+    for task in tasks:
+        # Toujours recalculer l'approbateur pour avoir les données les plus récentes
+        approver = get_department_approver(task.get('department'), employee)
+        
+        # Si pas d'approbateur trouvé, utiliser le Leave Approver par défaut
+        if not approver:
+            # Chercher le Leave Approver de l'employé
+            leave_approver = frappe.db.get_value('Employee', employee, 'leave_approver')
+            if leave_approver:
+                # Récupérer le nom complet de l'approbateur
+                approver_name = frappe.db.get_value('User', leave_approver, 'full_name') or leave_approver
+                approver = {
+                    'name': leave_approver,
+                    'employee_name': approver_name,
+                    'designation': 'Leave Approver'
+                }
+        
+        # Fallback si l'email n'a pas été récupéré via la jointure SQL
+        if task.get('custom_project_manager__') and not task.get('project_manager_email'):
+            try:
+                # Récupérer l'email via l'employé -> utilisateur
+                user_id = frappe.db.get_value('Employee', task.get('custom_project_manager__'), 'user_id')
+                if user_id:
+                    email = frappe.db.get_value('User', user_id, 'email')
+                    task['project_manager_email'] = email
+            except Exception as e:
+                frappe.log_error(f"Erreur récupération email pour employé {task.get('custom_project_manager__')}: {str(e)}")
+                task['project_manager_email'] = ''
+        
+        # Fallback si le nom n'a pas été récupéré via la jointure SQL
+        if task.get('custom_project_manager__') and not task.get('project_manager_name'):
+            try:
+                employee_name = frappe.db.get_value('Employee', task.get('custom_project_manager__'), 'employee_name')
+                if employee_name:
+                    task['project_manager_name'] = employee_name
+            except Exception as e:
+                frappe.log_error(f"Erreur récupération nom pour employé {task.get('custom_project_manager__')}: {str(e)}")
+                task['project_manager_name'] = 'Non spécifié'
+        
+        task.update({
+            'work_assignment_approver': approver.get('employee_name') if approver else 'Administrator',
+            'approved_': 'pending',  # Status initial
+            # Ajout des informations de projet
+            'project': task.get('project', ''),
+            'project_name': task.get('project_name', 'Aucun projet'),
+            'project_manager': task.get('project_manager_name', ''),
+            'project_manager_email': task.get('project_manager_email', '')
+        })
+    
+    return tasks
+    """
+    Récupère toutes les tâches actives d'un employé avec les informations de projet
+    et l'email du chef de projet
+    """
+    if not employee:
+        return []
+    
+    # Récupérer les tâches de l'employé avec les informations de projet
+    tasks = frappe.db.sql("""
+        SELECT 
+            t.name,
+            t.subject,
+            t.status,
+            t.priority,
+            t.progress,
+            t.exp_start_date,
+            t.exp_end_date,
+            t.department,
+            t.employee,
+            t.project,  -- Projet associé
+            p.project_name,  -- Nom du projet
+            p.custom_project_manager__,  -- Chef de projet (employé)
+            emp.employee_name as project_manager_name,  -- Nom du chef de projet
+            emp.user_id as project_manager_user_id,  -- User ID du chef de projet
+            u.email as project_manager_email  -- Email du chef de projet
+        FROM 
+            `tabTask manger HR` t
+        LEFT JOIN 
+            `tabProject` p ON t.project = p.name
+        LEFT JOIN
+            `tabEmployee` emp ON p.custom_project_manager__ = emp.name
+        LEFT JOIN
+            `tabUser` u ON emp.user_id = u.name
+        WHERE 
+            t.employee = %(employee)s
+            AND t.status NOT IN ('Completed', 'Cancelled')
+            AND t.docstatus != 2
+        ORDER BY 
+            t.priority DESC, t.exp_end_date ASC
+    """, {
+        'employee': employee
+    }, as_dict=1)
+    
+    # Pour chaque tâche, déterminer l'approbateur (toujours recalculé)
+    for task in tasks:
+        # Toujours recalculer l'approbateur pour avoir les données les plus récentes
+        approver = get_department_approver(task.get('department'), employee)
+        
+        # Si pas d'approbateur trouvé, utiliser le Leave Approver par défaut
+        if not approver:
+            # Chercher le Leave Approver de l'employé
+            leave_approver = frappe.db.get_value('Employee', employee, 'leave_approver')
+            if leave_approver:
+                # Récupérer le nom complet de l'approbateur
+                approver_name = frappe.db.get_value('User', leave_approver, 'full_name') or leave_approver
+                approver = {
+                    'name': leave_approver,
+                    'employee_name': approver_name,
+                    'designation': 'Leave Approver'
+                }
+        
+        task.update({
+            'work_assignment_approver': approver.get('employee_name') if approver else 'Administrator',
+            'approved_': 'pending',  # Status initial
+            # Ajout des informations de projet
+            'project': task.get('project', ''),
+            'project_name': task.get('project_name', 'Aucun projet'),
+            'project_manager': task.get('project_manager_name', ''),
+            'project_manager_email': task.get('project_manager_email', '')
+        })
+    
+    return tasks
+    """
     Récupère toutes les tâches actives d'un employé
     """
     if not employee:
@@ -275,6 +441,36 @@ def update_task_approval_decisions(leave_application, tasks_data):
 
 
 def auto_load_employee_tasks(doc, method=None, force_reload=False):
+    """
+    Charge automatiquement les tâches lors de la sélection d'un employé
+    Hook à utiliser dans Leave Application
+    """
+    if doc.employee and (not doc.get('employee_tasks') or force_reload):
+        try:
+            tasks = get_employee_tasks(doc.employee)
+            
+            # Vider la table existante
+            doc.employee_tasks = []
+            
+            # Ajouter les tâches avec les approbateurs recalculés
+            for task in tasks:
+                doc.append("employee_tasks", {
+                    "task_manger_hr": task.get("name"),
+                    "subject_of_task": task.get("subject"),
+                    "status": task.get("status"),
+                    "progress": str(task.get("progress", 0)),
+                    "employee": task.get("employee"),
+                    "department": task.get("department"),
+                    "work_assignment_approver": task.get("work_assignment_approver"),
+                    "approved_": "pending",
+                    # Ajout des nouveaux champs de projet
+                    "project": task.get("project", ""),
+                    "project_manager": task.get("project_manager", ""),
+                    "project_manager_email": task.get("project_manager_email", "")
+                })
+                
+        except Exception as e:
+            frappe.log_error(f"Erreur auto_load_employee_tasks: {str(e)}")
     """
     Charge automatiquement les tâches lors de la sélection d'un employé
     Hook à utiliser dans Leave Application
