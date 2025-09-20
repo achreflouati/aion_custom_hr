@@ -2,6 +2,27 @@ frappe.ui.form.on("Training Event", {
     refresh: function(frm) {
         // Ajouter les boutons seulement si le document n'est pas nouveau et est soumis
         if (!frm.is_new() && frm.doc.docstatus === 1) {
+           frm.add_custom_button(__("Add Event Calendar"), function() {
+    frappe.new_doc("Event", {
+        event_type: "Public",
+        subject: frm.doc.event_name,
+        starts_on: frm.doc.start_time,
+        ends_on: frm.doc.end_time,
+        description: frm.doc.description,
+        all_day: 0,
+        event_category: "Training",
+        training_event: frm.doc.name,
+        "event_participants": frm.doc.employees && frm.doc.employees.length > 0 ? 
+                        frm.doc.employees.map(e => (
+                            console.log("Creating participant for employee: ", e.employee_name,e.status),
+                            frappe.msgprint("name: " + e.employee_name,"status: " + e.status),{
+                            reference_doctype: "Contact",
+                            reference_docname: e.employee_name,
+                            status: "Accepted"
+                        })) : []
+        
+    });
+});
             if (frm.doc.travel_request_needs) {
                 // Vérifier si des Travel Requests ont déjà été créés
                 let all_requests_created = frm.doc.__travel_requests_created || false;
