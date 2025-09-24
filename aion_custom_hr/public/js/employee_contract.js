@@ -10,9 +10,15 @@ frappe.ui.form.on('Employee', {
             frm.add_custom_button(__('View Contracts'), function() {
                 view_employee_contracts(frm);
             }, __('Actions'));
+            
             frm.add_custom_button(__('Job Opening'), function() {
                 view_job_opening(frm);
             }, __('Actions'));
+            
+            // Ajouter le bouton pour voir l'historique des appraisals
+            frm.add_custom_button(__('Voir Historique Appraisals'), function() {
+                show_appraisal_history(frm);
+            }, __('Appraisal'));
         }
     }
 });
@@ -173,4 +179,110 @@ function get_contract_summary(frm) {
             }
         }
     });
+}
+
+function show_appraisal_history(frm) {
+    // Récupérer les appraisals de l'employé
+    frappe.call({
+        method: 'frappe.client.get_list',
+        args: {
+            doctype: 'Appraisal',
+            filters: {
+                employee: frm.doc.name,
+                docstatus: 1
+            },
+            fields: [
+                'name',
+                'employee',
+                'employee_name',
+                'total_score',
+                'final_score',
+                'modified',
+                'appraisal_cycle'
+            ],
+            order_by: 'modified desc'
+        },
+        callback: function(r) {
+            let all_appraisals = r.message || [];
+            
+            // Si l'employé a un manager, récupérer aussi ses appraisals
+            if (frm.doc.reports_to) {
+                frappe.call({
+                    method: 'frappe.client.get_list',
+                    args: {
+                        doctype: 'Appraisal',
+                        filters: {
+                            employee: frm.doc.reports_to,
+                            docstatus: 1
+                        },
+                        fields: [
+                            'name',
+                            'employee',
+                            'employee_name',
+                            'total_score',
+                            'final_score',
+                            'modified',
+                            'appraisal_cycle'
+                        ],
+                        order_by: 'modified desc'
+                    },
+                    callback: function(r2) {
+                        if (r2.message) {
+                            all_appraisals = all_appraisals.concat(r2.message);
+                        }
+                        display_appraisals(all_appraisals, frm.doc.reports_to);
+                    }
+                });
+            } else {
+                display_appraisals(all_appraisals);
+            }
+        }
+    });
+}
+
+function display_appraisals(appraisals, manager_id) {
+    if (appraisals && appraisals.length > 0) {
+        let message = '<div style="max-height: 400px; overflow-y: auto;">';
+        message += '<table class="table table-bordered">';
+        message += '<thead><tr>';
+        message += '<th>Employé</th>';
+        message += '<th>Date</th>';
+        message += '<th>Référence</th>';
+        message += '<th>Cycle</th>';
+        message += '<th>Score Total</th>';
+        message += '<th>Score Final</th>';
+        message += '<th>Score Mensuel</th>';
+        message += '</tr></thead>';
+        message += '<tbody>';
+        
+        // Trier les appraisals par date
+        appraisals.sort((a, b) => new Date(b.modified) - new Date(a.modified));
+        
+        appraisals.forEach(function(appraisal) {
+            let monthly_score = (appraisal.total_score / 5) * 100;
+            let date = frappe.datetime.str_to_user(appraisal.modified.split(' ')[0]);
+            let is_manager = appraisal.employee === manager_id;
+            
+            message += `<tr ${is_manager ? 'style="background-color: #f8f9fa;"' : ''}>`;
+            message += `<td>${appraisal.employee_name} ${is_manager ? '(Manager)' : ''}</td>`;
+            message += `<td>${date}</td>`;
+            message += `<td><a href="/app/appraisal/${appraisal.name}">${appraisal.name}</a></td>`;
+            message += `<td>${appraisal.appraisal_cycle || ''}</td>`;
+            message += `<td>${appraisal.total_score || 0}</td>`;
+            message += `<td>${appraisal.final_score || 0}</td>`;
+            message += `<td>${monthly_score.toFixed(2)}%</td>`;
+            message += '</tr>';
+        });
+        
+        message += '</tbody></table></div>';
+        
+        // Afficher le message avec les appraisals
+        frappe.msgprint({
+            title: __('Historique des Appraisals'),
+            message: message,
+            wide: true
+        });
+    } else {
+        frappe.msgprint(__('Aucun appraisal trouvé.'));
+    }
 }

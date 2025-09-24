@@ -1,0 +1,130 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-24 21:49:42.253139",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_eqpp",
+  "appraisal_date",
+  "employee",
+  "employee_name",
+  "column_break_1",
+  "appraisal_score",
+  "final_score",
+  "section_break_2",
+  "manager",
+  "manager_name",
+  "column_break_2",
+  "manager_score",
+  "section_break_3",
+  "appraisal_reference"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_eqpp",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "appraisal_date",
+   "fieldtype": "Date",
+   "label": "Appraisal Date",
+   "in_list_view": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee",
+   "in_list_view": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "appraisal_score",
+   "fieldtype": "Float",
+   "label": "Appraisal Score",
+   "in_list_view": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "final_score",
+   "fieldtype": "Float",
+   "label": "Final Score",
+   "in_list_view": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break",
+   "label": "Manager Information"
+  },
+  {
+   "fieldname": "manager",
+   "fieldtype": "Link",
+   "label": "Manager",
+   "options": "Employee",
+   "fetch_from": "employee.reports_to"
+  },
+  {
+   "fetch_from": "manager.employee_name",
+   "fieldname": "manager_name",
+   "fieldtype": "Data",
+   "label": "Manager Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "manager_score",
+   "fieldtype": "Float",
+   "label": "Manager Score",
+   "precision": "2"
+  },
+  {
+   "fieldname": "manager_score_date",
+   "fieldtype": "Date",
+   "label": "Manager Score Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "appraisal_reference",
+   "fieldtype": "Link",
+   "label": "Appraisal Reference",
+   "options": "Appraisal"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-24 21:49:42.253139",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "appraisal employee items",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
