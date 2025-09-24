@@ -55,6 +55,7 @@ function create_travel_requests(frm) {
             let created_count = 0;
             const total_employees = frm.doc.employees ? frm.doc.employees.length : 0;
             
+            
             if (total_employees === 0) {
                 frappe.msgprint(__('No employees found in this training event'));
                 return;
@@ -111,6 +112,7 @@ function create_travel_requests(frm) {
                                             message: __('{0} Travel Requests created successfully', [total_employees]),
                                             indicator: 'green'
                                         });
+                                        
                                     }
                                 });
                             }
@@ -125,6 +127,8 @@ function create_travel_requests(frm) {
                     }
                 });
             });
+            frappe.set_route('Form', 'Travel Request');
+            
         },
         function() {
             // Non, annuler
@@ -133,5 +137,8 @@ function create_travel_requests(frm) {
                 indicator: 'red'
             });
         }
+        
     );
+    
+    console.log("Navigated to Training Request form");
 }
