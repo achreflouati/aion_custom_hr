@@ -25,11 +25,25 @@ app_license = "mit"
 # Includes in <head>
 # ------------------
 fixtures = [
-    "Custom Field",
-    "Salary Component",
-    {"dt": "Salary Structure Assignment"},
-    {"dt": "Custom Field", "filters": {"dt": "Salary Slip", "fieldname": "assume_as_absent_count"}},
-    {"dt": "Custom Field", "filters": {"dt": "Leave Application", "fieldname": "employee_tasks"}}
+    "attendance_custom_fields.json",
+    "attendance_status_property_setter.json",
+    "contract_custom_field.json",
+    "custom_field_extra_hours_detail.json",
+    "custom_field_extra_hours.json",
+    "custom_field_penalty_detail.json",
+    "custom_field_penalty_management.json",
+    "custom_field_salary_slip_extra_hours.json",
+    "custom_field_shift_late_early_assume_absent.json",
+    "custom_field_timesheet_work_assignment_approver.json",
+    "custom_fields.json",
+    "leave_application_task_fields.json",
+    "payroll_entry_fields.json",
+    "salary_component.json",
+    "salary_slip_assume_absent_field.json",
+    "salary_slip_total_minutes_fields.json",
+    "salary_structure_assignment_custom_fields.json",
+    "timesheet_approval_workflow.json",
+    "timesheet_workflow.json"
 ]
 
 # include js, css files in header of desk.html
