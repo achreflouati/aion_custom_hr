@@ -29,10 +29,10 @@
     "name": "Manager_monthly_appraisal_score",
     "dt": "Employee",
     "fieldname": "manager_appraisal_score",
-    "label": " Manger Monthly appraisal score",
+    "label": " Manager Monthly appraisal score",
     "fieldtype": "Float",
     "insert_after": "monthly_appraisal_score",
-    "description": "Score mensuel d'évaluation de la performance",
+    "description": "Score mensuel d'évaluation du manager",
     "reqd": 0,
     "in_list_view": 0
   },
@@ -63,7 +63,6 @@
     "in_list_view": 0
   },
   {
-  
     "doctype": "Custom Field",
     "name": "all_project_managers_emails",
     "dt": "Leave Application",
@@ -86,8 +85,64 @@
     "label": "Travel Request Needs",
     "fieldtype": "Check",
     "insert_after": "has_certificate",
-    
     "description": "please check if travel request is needed for this training",
+    "reqd": 0,
+    "in_list_view": 0
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "appraisal_history_section",
+    "dt": "Employee",
+    "fieldname": "appraisal_history_section",
+    "label": "Appraisal History",
+    "fieldtype": "Section Break",
+    "insert_after": "manager_appraisal_score"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "appraisal_history",
+    "dt": "Employee",
+    "fieldname": "appraisal_history",
+    "label": "Appraisal History",
+    "fieldtype": "Table",
+    "options": "appraisal employee items",
+    "insert_after": "appraisal_history_section",
+    "description": "Historique des évaluations (employé)",
+    "reqd": 0,
+    "read_only": 1
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "appraisal_manager_history_section",
+    "dt": "Employee",
+    "fieldname": "appraisal_manager_history_section",
+    "label": "Manager Appraisal History",
+    "fieldtype": "Section Break",
+    "insert_after": "appraisal_history"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "appraisal_manager_history",
+    "dt": "Employee",
+    "fieldname": "appraisal_manager_history",
+    "label": "Manager Appraisal History",
+    "fieldtype": "Table",
+    "options": "appraisal_manager_items",
+    "insert_after": "appraisal_manager_history_section",
+    "description": "Historique des évaluations (manager)",
+    "reqd": 0,
+    "read_only": 1
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "annual_appraisal_score",
+    "dt": "Employee",
+    "fieldname": "annual_appraisal_score",
+    "label": "Annual Appraisal Score",
+    "fieldtype": "Float",
+    "insert_after": "appraisal_manager_history",
+    "description": "Score annuel d'évaluation",
+    "precision": "2",
     "reqd": 0,
     "in_list_view": 0
   }

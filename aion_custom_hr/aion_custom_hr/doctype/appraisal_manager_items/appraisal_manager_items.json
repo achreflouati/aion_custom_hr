@@ -1,16 +1,16 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-09-24 21:49:42.253139",
+ "creation": "2025-09-28 02:26:34.601684",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "section_break_eqpp",
+  "section_break_details",
   "appraisal_date",
   "reference_date",
-  "employee",
-  "employee_name",
+  "manager",
+  "manager_name",
   "column_break_1",
   "appraisal_cycle",
   "cycle_start_date",
@@ -19,18 +19,17 @@
   "appraisal_score",
   "total_score",
   "final_score",
-  "section_break_2",
-  "manager",
-  "manager_name",
+  "section_break_employee",
+  "employee",
+  "employee_name",
   "column_break_2",
-  "manager_score",
-  "manager_score_date",
-  "section_break_3",
+  "employee_score",
+  "section_break_reference",
   "appraisal_reference"
  ],
  "fields": [
   {
-   "fieldname": "section_break_eqpp",
+   "fieldname": "section_break_details",
    "fieldtype": "Section Break",
    "label": "Details"
   },
@@ -45,22 +44,21 @@
    "fieldname": "reference_date",
    "fieldtype": "Date",
    "label": "Reference Date",
-   "description": "Date du document Appraisal (pour référence)",
-   "in_list_view": 0
+   "description": "Date du document Appraisal"
   },
   {
-   "fieldname": "employee",
+   "fieldname": "manager",
    "fieldtype": "Link",
-   "label": "Employee",
+   "label": "Manager",
    "options": "Employee",
    "in_list_view": 1,
    "reqd": 1
   },
   {
-   "fetch_from": "employee.employee_name",
-   "fieldname": "employee_name",
+   "fieldname": "manager_name",
    "fieldtype": "Data",
-   "label": "Employee Name",
+   "label": "Manager Name",
+   "fetch_from": "manager.employee_name",
    "read_only": 1
   },
   {
@@ -71,68 +69,65 @@
    "fieldname": "appraisal_cycle",
    "fieldtype": "Data",
    "label": "Appraisal Cycle",
-   "description": "Nom du cycle d'appraisal",
    "in_list_view": 1
   },
   {
    "fieldname": "cycle_start_date",
    "fieldtype": "Date",
-   "label": "Cycle Start Date",
-   "description": "Date de début du cycle"
+   "label": "Cycle Start Date"
   },
   {
    "fieldname": "cycle_end_date",
    "fieldtype": "Date",
-   "label": "Cycle End Date",
-   "description": "Date de fin du cycle"
+   "label": "Cycle End Date"
   },
   {
    "fieldname": "status",
    "fieldtype": "Data",
    "label": "Status",
-   "description": "Statut de l'appraisal ",
-   "in_list_view": 1
+   "in_list_view": 1,
+   "description": "Status of the Appraisal "
   },
   {
    "fieldname": "appraisal_score",
    "fieldtype": "Float",
    "label": "Appraisal Score",
-   "in_list_view": 1,
    "precision": "2",
-   "description": "Score converti (ex: monthly % or custom)"
+   "in_list_view": 1,
+   "description": "Score converti (ex: %)"
   },
   {
    "fieldname": "total_score",
    "fieldtype": "Float",
    "label": "Total Score",
-   "in_list_view": 1,
    "precision": "2",
-   "description": "Total raw score from Appraisal"
+   "in_list_view": 1,
+   "description": "Raw total score from Appraisal"
   },
   {
    "fieldname": "final_score",
    "fieldtype": "Float",
    "label": "Final Score",
-   "in_list_view": 1,
-   "precision": "2"
+   "precision": "2",
+   "in_list_view": 1
   },
   {
-   "fieldname": "section_break_2",
+   "fieldname": "section_break_employee",
    "fieldtype": "Section Break",
-   "label": "Manager Information"
+   "label": "Employee Information"
   },
   {
-   "fieldname": "manager",
+   "fieldname": "employee",
    "fieldtype": "Link",
-   "label": "Manager",
+   "label": "Employee",
    "options": "Employee",
-   "fetch_from": "employee.reports_to"
+   "in_list_view": 1
   },
   {
-   "fetch_from": "manager.employee_name",
-   "fieldname": "manager_name",
+   "fieldname": "employee_name",
    "fieldtype": "Data",
-   "label": "Manager Name",
+   "label": "Employee Name",
+   "fetch_from": "employee.employee_name",
    "read_only": 1
   },
   {
@@ -140,19 +135,13 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "manager_score",
+   "fieldname": "employee_score",
    "fieldtype": "Float",
-   "label": "Manager Score",
+   "label": "Employee Score",
    "precision": "2"
   },
   {
-   "fieldname": "manager_score_date",
-   "fieldtype": "Date",
-   "label": "Manager Score Date",
-   "read_only": 1
-  },
-  {
-   "fieldname": "section_break_3",
+   "fieldname": "section_break_reference",
    "fieldtype": "Section Break",
    "label": "Reference"
   },
@@ -167,10 +156,10 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-24 21:49:42.253139",
+ "modified": "2025-09-28 02:26:34.601684",
  "modified_by": "Administrator",
  "module": "aion_custom_hr",
- "name": "appraisal employee items",
+ "name": "appraisal_manager_items",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",
