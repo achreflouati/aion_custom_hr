@@ -43,7 +43,13 @@ fixtures = [
     "salary_slip_total_minutes_fields.json",
     "salary_structure_assignment_custom_fields.json",
     "timesheet_approval_workflow.json",
-    "timesheet_workflow.json"
+    "timesheet_workflow.json",
+    
+    {"dt": "Workflow"},
+    {"dt": "Workflow State"},
+    {"dt": "Workflow Action Master"}
+
+
 ]
 
 # include js, css files in header of desk.html
