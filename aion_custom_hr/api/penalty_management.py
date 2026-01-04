@@ -251,7 +251,7 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
             SELECT 
                 name as attendance_name,
                 attendance_date,
-                shift_type,
+                shift,
                 status,
                 in_time,
                 out_time,
