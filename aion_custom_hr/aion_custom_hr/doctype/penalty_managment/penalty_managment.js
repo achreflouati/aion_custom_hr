@@ -16,14 +16,14 @@ frappe.ui.form.on("penalty managment", {
                 recalculate_penalty_totals(frm);
             });
 
-            frm.add_custom_button(__("Appliquer les justifications"), function() {
+            frm.add_custom_button(__("Apply the justifications for the delays"), function() {
                 apply_late_justifications(frm);
             });
         }
         // Appliquer les justifications de retard approuvées
         function apply_late_justifications(frm) {
             if (!frm.doc.employee || !frm.doc.from_date || !frm.doc.to_date) {
-                frappe.msgprint(__("Veuillez sélectionner un employé et une période."));
+                frappe.msgprint(__("Please select an employee and a time period."));
                 return;
             }
             frappe.call({
@@ -37,7 +37,7 @@ frappe.ui.form.on("penalty managment", {
                     if (r.message && r.message.success) {
                         let justifications = r.message.justifications || [];
                         if (justifications.length === 0) {
-                            frappe.msgprint(__("Aucune justification approuvée trouvée pour cette période."));
+                            frappe.msgprint(__("No approved justification was found for this period."));
                             return;
                         }
                         let applied_count = 0;
