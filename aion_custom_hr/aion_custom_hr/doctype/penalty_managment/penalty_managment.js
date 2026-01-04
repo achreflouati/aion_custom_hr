@@ -8,13 +8,13 @@ frappe.ui.form.on("penalty managment", {
 
     refresh: function(frm) {
         if (frm.doc.docstatus === 0) {
-            frm.add_custom_button(__("Load Penalties"), function() {
-                load_penalties_for_employee(frm);
-            });
+            // frm.add_custom_button(__("Load Penalties"), function() {
+            //     load_penalties_for_employee(frm);
+            // });
 
-            frm.add_custom_button(__("Recalculate"), function() {
-                recalculate_penalty_totals(frm);
-            });
+            // frm.add_custom_button(__("Recalculate"), function() {
+            //     recalculate_penalty_totals(frm);
+            // });
 
             frm.add_custom_button(__("Apply the justifications for the delays"), function() {
                 apply_late_justifications(frm);

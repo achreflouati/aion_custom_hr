@@ -109,24 +109,8 @@
     "read_only": 1,
     "insert_after": "column_break_3"
   },
-  {
-    "doctype": "Custom Field",
-    "name": "penalty managment-section_break_actions",
-    "dt": "penalty managment",
-    "fieldname": "section_break_actions",
-    "fieldtype": "Section Break",
-    "label": "Actions",
-    "insert_after": "total_penalty_minutes"
-  },
-  {
-    "doctype": "Custom Field",
-    "name": "penalty managment-load_penalties_btn",
-    "dt": "penalty managment",
-    "fieldname": "load_penalties_btn",
-    "fieldtype": "Button",
-    "label": "Load Penalties",
-    "insert_after": "section_break_actions"
-  },
+ 
+ 
   {
     "doctype": "Custom Field",
     "name": "penalty managment-column_break_4",
@@ -135,15 +119,7 @@
     "fieldtype": "Column Break",
     "insert_after": "load_penalties_btn"
   },
-  {
-    "doctype": "Custom Field",
-    "name": "penalty managment-recalculate_btn",
-    "dt": "penalty managment",
-    "fieldname": "recalculate_btn",
-    "fieldtype": "Button",
-    "label": "Recalculate Penalties",
-    "insert_after": "column_break_4"
-  },
+ 
   {
     "doctype": "Custom Field",
     "name": "penalty managment-section_break_details",
