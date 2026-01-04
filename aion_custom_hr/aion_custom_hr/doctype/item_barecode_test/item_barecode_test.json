@@ -1,0 +1,127 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-09 17:37:54.272548",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_scan",
+  "barcode",
+  "column_break_1",
+  "last_scan_time",
+  "section_break_item_info",
+  "item_code",
+  "item_name",
+  "column_break_2",
+  "item_group",
+  "standard_rate",
+  "section_break_stock",
+  "warehouse_stock_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_scan",
+   "fieldtype": "Section Break",
+   "label": "Scanner Code-Barre"
+  },
+  {
+   "fieldname": "barcode",
+   "fieldtype": "Data",
+   "label": "Code-Barre",
+   "description": "Scannez ou tapez le code-barre ici",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_scan_time",
+   "fieldtype": "Datetime",
+   "label": "Dernière Scan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_item_info",
+   "fieldtype": "Section Break",
+   "label": "Informations Item"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Code Item",
+   "options": "Item",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Nom Item",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Data",
+   "label": "Groupe Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "standard_rate",
+   "fieldtype": "Currency",
+   "label": "Prix Standard",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "section_break_stock",
+   "fieldtype": "Section Break",
+   "label": "Stock par Dépôt"
+  },
+  {
+   "fieldname": "warehouse_stock_table",
+   "fieldtype": "Table",
+   "label": "Stock Dépôts",
+   "options": "Item Warehouse Stock",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-10-09 17:39:05.802985",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "item barecode test",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock User",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

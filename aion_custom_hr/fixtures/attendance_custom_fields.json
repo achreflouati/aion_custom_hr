@@ -17,4 +17,24 @@
     "fieldtype": "Float",
     "insert_after": "total_late_minutes"
   }
+  ,
+  {
+    "doctype": "Custom Field",
+    "dt": "Attendance Request",
+    "fieldname": "late",
+    "name": "Attendance Request-late",
+    "label": "Late",
+    "fieldtype": "Check",
+    "insert_after": "half_day"
+  },
+  {
+    "doctype": "Property Setter",
+    "name": "Attendance Request-reason-options",
+    "doctype_or_field": "DocField",
+    "doc_type": "Attendance Request",
+    "field_name": "reason",
+    "property": "options",
+    "property_type": "Text",
+    "value": "Work From Home\nOn Duty\nLate"
+  }
 ]

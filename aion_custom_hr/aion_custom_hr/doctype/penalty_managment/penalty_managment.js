@@ -11,9 +11,60 @@ frappe.ui.form.on("penalty managment", {
             frm.add_custom_button(__("Load Penalties"), function() {
                 load_penalties_for_employee(frm);
             });
-            
+
             frm.add_custom_button(__("Recalculate"), function() {
                 recalculate_penalty_totals(frm);
+            });
+
+            frm.add_custom_button(__("Appliquer les justifications"), function() {
+                apply_late_justifications(frm);
+            });
+        }
+        // Appliquer les justifications de retard approuvées
+        function apply_late_justifications(frm) {
+            if (!frm.doc.employee || !frm.doc.from_date || !frm.doc.to_date) {
+                frappe.msgprint(__("Veuillez sélectionner un employé et une période."));
+                return;
+            }
+            frappe.call({
+                method: 'aion_custom_hr.api.penalty_management.get_approved_late_justifications',
+                args: {
+                    employee: frm.doc.employee,
+                    from_date: frm.doc.from_date,
+                    to_date: frm.doc.to_date
+                },
+                callback: function(r) {
+                    if (r.message && r.message.success) {
+                        let justifications = r.message.justifications || [];
+                        if (justifications.length === 0) {
+                            frappe.msgprint(__("Aucune justification approuvée trouvée pour cette période."));
+                            return;
+                        }
+                        let applied_count = 0;
+                        justifications.forEach(justif => {
+                            let found = false;
+                            (frm.doc.penalty_details || []).forEach(row => {
+                                if (row.attendance_date === j.date) {
+                                    let before = row.corrected_late_penalty || 0;
+                                    row.corrected_late_penalty = Math.max(0, before - (j.late_minutes || 0));
+                                    row.is_corrected = 1;
+                                    found = true;
+                                    applied_count++;
+                                }
+                            });
+                        });
+                        if (applied_count > 0) {
+                            calculate_totals_from_details(frm);
+                            frm.refresh_field("penalty_details");
+                            frappe.msgprint(__("Justifications appliquées à {0} ligne(s) de pénalité.", [applied_count]));
+                            schedule_save(frm);
+                        } else {
+                            frappe.msgprint(__("Aucune ligne de pénalité correspondante trouvée pour les justifications."));
+                        }
+                    } else {
+                        frappe.msgprint(__("Erreur lors de la récupération des justifications : ") + (r.message && r.message.error || "Erreur inconnue"));
+                    }
+                }
             });
         }
         

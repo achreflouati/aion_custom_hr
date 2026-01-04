@@ -1,8 +1,37 @@
+
 import frappe
 from frappe import _
 from frappe.utils import getdate, add_days, date_diff, flt
 from frappe.model.document import Document
 
+
+
+
+@frappe.whitelist()
+def get_approved_late_justifications(employee, from_date, to_date):
+    """
+    Retourne le total des minutes justifiées (Late Entry Request approuvées) pour un employé et une période donnée.
+    Utilise le champ nb_hours_late (en heures), converti en minutes.
+    """
+    try:
+        justifications = frappe.db.get_all(
+            "Late Entry Request",
+            filters={
+                "employee": employee,
+                "from_datetime": [">=", from_date],
+                "to_datetime": ["<=", to_date],
+                "workflow_state": "Approved"
+            },
+            fields=["nb_hours_late"]
+        )
+        # Debug: Uncomment to see justifications in UI
+        # frappe.throw(_("Justifications found: {0} | nb_hours_late: {1}").format(len(justifications), [j.nb_hours_late for j in justifications]))
+        total_justified_minutes = sum((j.nb_hours_late or 0)  for j in justifications)
+        frappe.throw(_("Total justified minutes: {0}").format(total_justified_minutes))
+        return {"success": True, "total_justified_minutes": total_justified_minutes}
+    except Exception as e:
+        frappe.log_error(f"Error fetching late justifications: {str(e)}")
+        return {"success": False, "error": str(e)}
 @frappe.whitelist()
 def check_new_penalties_for_shift(shift_type, from_date, to_date):
     """

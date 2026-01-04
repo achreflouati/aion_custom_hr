@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-09 17:17:16.893085",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "warehouse",
+  "warehouse_name",
+  "actual_qty",
+  "reserved_qty",
+  "projected_qty",
+  "available_qty"
+ ],
+ "fields": [
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Dépôt",
+   "options": "Warehouse",
+   "in_list_view": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "warehouse_name",
+   "fieldtype": "Data",
+   "label": "Nom Dépôt",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "actual_qty",
+   "fieldtype": "Float",
+   "label": "Qté Actuelle",
+   "precision": "2",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "reserved_qty",
+   "fieldtype": "Float",
+   "label": "Qté Réservée",
+   "precision": "2",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "projected_qty",
+   "fieldtype": "Float",
+   "label": "Qté Projetée",
+   "precision": "2",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "available_qty",
+   "fieldtype": "Float",
+   "label": "Qté Disponible",
+   "precision": "2",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "Qté Actuelle - Qté Réservée"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-10-09 17:17:16.893085",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Item Warehouse Stock",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

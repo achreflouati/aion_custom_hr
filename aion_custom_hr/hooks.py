@@ -209,6 +209,14 @@ doc_events = {
     "Extra Hours": {
         "validate": "aion_custom_hr.extra_hours.update_extra_hours_totals",
         "before_save": "aion_custom_hr.extra_hours.update_extra_hours_totals"
+    },
+    "Attendance Request": {
+        "after_insert": "aion_custom_hr.api.api_attendance_request.notify_manager_on_late",
+        "on_update": "aion_custom_hr.api.api_attendance_request.notify_employee_on_state_change"
+    },
+    "Late Entry Request": {
+        "after_insert": "aion_custom_hr.aion_custom_hr.doctype.late_entry_request.late_entry_request.notify_manager_on_late",
+        "on_update": "aion_custom_hr.aion_custom_hr.doctype.late_entry_request.late_entry_request.notify_employee_on_state_change"
     }
 }
 
