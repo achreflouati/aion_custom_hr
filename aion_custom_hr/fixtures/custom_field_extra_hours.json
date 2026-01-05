@@ -1,12 +1,43 @@
 [
   {
     "doctype": "Custom Field",
+    "name": "Extra Hours-section_break_period",
+    "dt": "Extra Hours",
+    "fieldname": "section_break_period",
+    "fieldtype": "Section Break",
+    "label": "الفترة",
+    "insert_after": "title"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-from_date",
+    "dt": "Extra Hours",
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "من تاريخ",
+    "reqd": 1,
+    "in_list_view": 1,
+    "insert_after": "section_break_period"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours-to_date",
+    "dt": "Extra Hours",
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "إلى تاريخ",
+    "reqd": 1,
+    "in_list_view": 1,
+    "insert_after": "from_date"
+  },
+  {
+    "doctype": "Custom Field",
     "name": "Extra Hours-section_break_employee",
     "dt": "Extra Hours",
     "fieldname": "section_break_employee",
     "fieldtype": "Section Break",
     "label": "معلومات الموظف",
-    "insert_after": "title"
+    "insert_after": "to_date"
   },
   {
     "doctype": "Custom Field",
@@ -35,43 +66,12 @@
   },
   {
     "doctype": "Custom Field",
-    "name": "Extra Hours-section_break_period",
-    "dt": "Extra Hours",
-    "fieldname": "section_break_period",
-    "fieldtype": "Section Break",
-    "label": "الفترة",
-    "insert_after": "employee_name"
-  },
-  {
-    "doctype": "Custom Field",
-    "name": "Extra Hours-from_date",
-    "dt": "Extra Hours",
-    "fieldname": "from_date",
-    "fieldtype": "Date",
-    "label": "من تاريخ",
-    "reqd": 1,
-    "in_list_view": 1,
-    "insert_after": "section_break_period"
-  },
-  {
-    "doctype": "Custom Field",
-    "name": "Extra Hours-to_date",
-    "dt": "Extra Hours",
-    "fieldname": "to_date",
-    "fieldtype": "Date",
-    "label": "إلى تاريخ",
-    "reqd": 1,
-    "in_list_view": 1,
-    "insert_after": "from_date"
-  },
-  {
-    "doctype": "Custom Field",
     "name": "Extra Hours-section_break_details",
     "dt": "Extra Hours",
     "fieldname": "section_break_details",
     "fieldtype": "Section Break",
     "label": "تفاصيل الساعات الإضافية",
-    "insert_after": "to_date"
+    "insert_after": "employee_name"
   },
   {
     "doctype": "Custom Field",
@@ -85,21 +85,12 @@
   },
   {
     "doctype": "Custom Field",
-    "name": "Extra Hours-section_break_after_table",
-    "dt": "Extra Hours",
-    "fieldname": "section_break_after_table",
-    "fieldtype": "Section Break",
-    "label": "",
-    "insert_after": "extra_hours_details"
-  },
-  {
-    "doctype": "Custom Field",
     "name": "Extra Hours-section_break_approval",
     "dt": "Extra Hours",
     "fieldname": "section_break_approval",
     "fieldtype": "Section Break",
     "label": "الموافقة",
-    "insert_after": "section_break_after_table"
+    "insert_after": "extra_hours_details"
   },
   {
     "doctype": "Custom Field",
