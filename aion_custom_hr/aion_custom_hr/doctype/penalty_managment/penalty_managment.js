@@ -23,7 +23,7 @@ frappe.ui.form.on("penalty managment", {
         // Appliquer les justifications de retard approuvées
         function apply_late_justifications(frm) {
             if (!frm.doc.employee || !frm.doc.from_date || !frm.doc.to_date) {
-                frappe.msgprint(__("Please select an employee and a time period."));
+                frappe.msgprint(__("يرجى اختيار الموظف والفترة الزمنية."));
                 return;
             }
             frappe.call({
@@ -38,17 +38,17 @@ frappe.ui.form.on("penalty managment", {
                         let justifications = r.message.justifications || [];
                         console.log("justfication",justifications)
                         if (justifications.length === 0) {
-                            frappe.msgprint(__("No approved justification was found for this period."));
+                            frappe.msgprint(__("لم يتم العثور على أي مبرر معتمد لهذه الفترة."));
                             return;
                         }
                         // Préparer un résumé dynamique des lignes affectées
                         let summary = '<ul>';
                         justifications.forEach(j => {
-                            summary += `<li>Date: <b>${j.date}</b> - Minutes justified: <b>${j.late_minutes}</b></li>`;
+                            summary += `<li>التاريخ: <b>${j.date}</b> - دقائق مبررة: <b>${j.late_minutes}</b></li>`;
                         });
                         summary += '</ul>';
                         frappe.confirm(
-                            __("The following justifications will be applied and the penalties corrected:") + '<br>' + summary + '<br>' + __("Voulez-vous continuer ?"),
+                            __("سيتم تطبيق المبررات التالية وتصحيح العقوبات:") + '<br>' + summary + '<br>' + __("هل تريد المتابعة؟"),
                             function() {
                                 // Appliquer la correction après confirmation
                                 let applied_count = 0;
@@ -65,18 +65,18 @@ frappe.ui.form.on("penalty managment", {
                                 if (applied_count > 0) {
                                     calculate_totals_from_details(frm);
                                     frm.refresh_field("penalty_details");
-                                    frappe.msgprint(__("Justifications appliquées à {0} ligne(s) de pénalité.", [applied_count]));
+                                    frappe.msgprint(__("تم تطبيق المبررات على {0} سطر(أسطر) من العقوبات.", [applied_count]));
                                     schedule_save(frm);
                                 } else {
-                                    frappe.msgprint(__("Aucune ligne de pénalité correspondante trouvée pour les justifications."));
+                                    frappe.msgprint(__("لم يتم العثور على أي سطر عقوبة مطابق للمبررات."));
                                 }
                             },
                             function() {
-                                frappe.msgprint(__("Aucune correction appliquée."));
+                                frappe.msgprint(__("لم يتم تطبيق أي تصحيح."));
                             }
                         );
                     } else {
-                        frappe.msgprint(__("Erreur lors de la récupération des justifications : ") + (r.message && r.message.error || "Erreur inconnue"));
+                        frappe.msgprint(__("حدث خطأ أثناء جلب المبررات: ") + (r.message && r.message.error || "خطأ غير معروف"));
                     }
                 }
             });
@@ -140,7 +140,6 @@ function mark_as_modified(frm, cdt, cdn) {
 
 function schedule_save(frm) {
     if (frm.is_saving) return;
-    
     clearTimeout(frm.save_timeout);
     frm.save_timeout = setTimeout(function() {
         save_document(frm);
@@ -149,27 +148,22 @@ function schedule_save(frm) {
 
 function save_document(frm) {
     if (frm.is_saving) {
-        frappe.show_alert({message: __('Saving in progress...'), indicator: 'blue'});
+        frappe.show_alert({message: __('جاري الحفظ...'), indicator: 'blue'});
         return;
     }
-    
     if (!frm.doc.employee) {
-        frappe.msgprint(__("Please select an employee first"));
+        frappe.msgprint(__("يرجى اختيار الموظف أولاً"));
         return;
     }
-    
     frm.is_saving = true;
-    frappe.show_alert({message: __('Saving changes...'), indicator: 'blue'});
-    
+    frappe.show_alert({message: __('جاري حفظ التغييرات...'), indicator: 'blue'});
     frm.save().then(() => {
-        frappe.show_alert({message: __('Changes saved successfully'), indicator: 'green'});
+        frappe.show_alert({message: __('تم حفظ التغييرات بنجاح'), indicator: 'green'});
         frm.is_saving = false;
-        
         after_save_update_salary_slips(frm);
-        
     }).catch((error) => {
         console.error('Save error:', error);
-        frappe.show_alert({message: __('Error saving changes'), indicator: 'red'});
+        frappe.show_alert({message: __('حدث خطأ أثناء الحفظ'), indicator: 'red'});
         frm.is_saving = false;
     });
 }
@@ -189,12 +183,12 @@ function after_save_update_salary_slips(frm) {
                 console.log("Salary slip update response:", r.message);
                 if (r.message && r.message.success) {
                     frappe.show_alert({
-                        message: __('Updated {0} salary slip(s)', [r.message.total_updated]),
+                        message: __('تم تحديث {0} قسيمة راتب', [r.message.total_updated]),
                         indicator: 'green'
                     });
                 } else {
                     frappe.show_alert({
-                        message: __('Error updating salary slips: {0}', [r.message.error || 'Unknown error']),
+                        message: __('حدث خطأ أثناء تحديث قسائم الراتب: {0}', [r.message.error || 'خطأ غير معروف']),
                         indicator: 'red'
                     });
                 }
@@ -204,15 +198,13 @@ function after_save_update_salary_slips(frm) {
 }
 function load_penalties_for_employee(frm) {
     if (!frm.doc.employee) {
-        frappe.msgprint(__("Please select an employee first"));
+        frappe.msgprint(__("يرجى اختيار الموظف أولاً"));
         return;
     }
-    
     if (!frm.doc.from_date || !frm.doc.to_date) {
-        frappe.msgprint(__("Please select both from and to dates"));
+        frappe.msgprint(__("يرجى اختيار تاريخ البداية والنهاية"));
         return;
     }
-    
     frappe.call({
         method: 'aion_custom_hr.api.penalty_management.load_penalties_for_period',
         args: {
@@ -224,12 +216,11 @@ function load_penalties_for_employee(frm) {
             if (r.message && r.message.success) {
                 populate_penalty_details(frm, r.message.penalties);
                 update_summary_totals(frm, r.message.summary);
-                frappe.msgprint(__("Loaded {0} penalty records", [r.message.total_records]));
-                
+                frappe.msgprint(__("تم تحميل {0} سجل عقوبة", [r.message.total_records]));
                 after_save_update_salary_slips(frm);
                 save_document(frm);
             } else {
-                frappe.msgprint(__("Error loading penalties: ") + (r.message.error || "Unknown error"));
+                frappe.msgprint(__("حدث خطأ أثناء تحميل العقوبات: ") + (r.message.error || "خطأ غير معروف"));
             }
         }
     });
@@ -299,10 +290,9 @@ function calculate_totals_from_details(frm) {
 
 function recalculate_penalty_totals(frm) {
     if (!frm.doc.name) {
-        frappe.msgprint(__("Please save the document first"));
+        frappe.msgprint(__("يرجى حفظ المستند أولاً"));
         return;
     }
-    
     frappe.call({
         method: 'aion_custom_hr.api.penalty_management.recalculate_penalty_management',
         args: {
@@ -313,17 +303,15 @@ function recalculate_penalty_totals(frm) {
                 frm.set_value("corrected_late_penalty", r.message.totals.corrected_late_penalty);
                 frm.set_value("corrected_early_penalty", r.message.totals.corrected_early_penalty);
                 frm.set_value("total_corrected_penalty", r.message.totals.total_corrected_penalty);
-                
                 if (r.message.salary_slips_updated && r.message.salary_slips_updated.total_updated > 0) {
-                    frappe.msgprint(__("Penalties recalculated successfully. Updated {0} salary slip(s)", 
+                    frappe.msgprint(__("تم إعادة احتساب العقوبات بنجاح. تم تحديث {0} قسيمة راتب", 
                         [r.message.salary_slips_updated.total_updated]));
                 } else {
-                    frappe.msgprint(__("Penalties recalculated successfully. No salary slips found to update"));
+                    frappe.msgprint(__("تم إعادة احتساب العقوبات بنجاح. لم يتم العثور على قسائم راتب للتحديث"));
                 }
-                
                 save_document(frm);
             } else {
-                frappe.msgprint(__("Error recalculating penalties: ") + (r.message.error || "Unknown error"));
+                frappe.msgprint(__("حدث خطأ أثناء إعادة احتساب العقوبات: ") + (r.message.error || "خطأ غير معروف"));
             }
         }
     });
