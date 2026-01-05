@@ -1,17 +1,3 @@
-frappe.ui.form.on("EXTRA HOURS REQUEST", {
-	refresh(frm) {
-		if (frm.doc.docstatus === 0) {
-			frm.add_custom_button(__('تطبيق مبررات الساعات الإضافية'), function() {
-				apply_extra_hours_justifications(frm);
-			});
-		}
-	}
-});
-
-function apply_extra_hours_justifications(frm) {
-	frappe.msgprint(__('Cette fonctionnalité doit être reliée à votre logique métier pour appliquer les justifications d\'heures supplémentaires.'));
-	// Ici, vous pouvez appeler un backend ou appliquer une logique similaire à celle des retards si besoin.
-}
 // Copyright (c) 2026, ard and contributors
 // For license information, please see license.txt
 
