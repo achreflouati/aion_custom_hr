@@ -85,12 +85,21 @@
   },
   {
     "doctype": "Custom Field",
+    "name": "Extra Hours-section_break_after_table",
+    "dt": "Extra Hours",
+    "fieldname": "section_break_after_table",
+    "fieldtype": "Section Break",
+    "label": "",
+    "insert_after": "extra_hours_details"
+  },
+  {
+    "doctype": "Custom Field",
     "name": "Extra Hours-section_break_summary",
     "dt": "Extra Hours",
     "fieldname": "section_break_summary",
     "fieldtype": "Section Break",
     "label": "الملخص",
-    "insert_after": "extra_hours_details"
+    "insert_after": "section_break_after_table"
   },
   {
     "doctype": "Custom Field",
