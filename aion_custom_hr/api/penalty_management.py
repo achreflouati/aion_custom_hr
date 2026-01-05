@@ -33,7 +33,7 @@ def get_approved_late_justifications(employee, from_date, to_date):
             })
         return {"success": True, "justifications": result}
     except Exception as e:
-        # frappe.log_error(f"Error fetching late justifications: {str(e)}")
+       
         return {"success": False, "error": str(e)}
 @frappe.whitelist()
 def check_new_penalties_for_shift(shift_type, from_date, to_date):
