@@ -22,13 +22,17 @@ def get_approved_late_justifications(employee, from_date, to_date):
                 "to_datetime": ["<=", to_date],
                 "workflow_state": "Approved"
             },
-            fields=["nb_hours_late"]
+            fields=["name", "from_datetime", "nb_hours_late"]
         )
-        # Debug: Uncomment to see justifications in UI
-        # frappe.throw(_("Justifications found: {0} | nb_hours_late: {1}").format(len(justifications), [j.nb_hours_late for j in justifications]))
-        total_justified_minutes = sum((j.nb_hours_late or 0)  for j in justifications)
-        frappe.throw(_("Total justified minutes: {0}").format(total_justified_minutes))
-        return {"success": True, "total_justified_minutes": total_justified_minutes}
+        result = []
+        for j in justifications:
+            # nb_hours_late est en minutes (selon usage réel)
+            result.append({
+                "date": str(j.from_datetime.date()),
+                "late_minutes": j.nb_hours_late or 0,
+                "name": j.name
+            })
+        return {"success": True, "justifications": result}
     except Exception as e:
         frappe.log_error(f"Error fetching late justifications: {str(e)}")
         return {"success": False, "error": str(e)}

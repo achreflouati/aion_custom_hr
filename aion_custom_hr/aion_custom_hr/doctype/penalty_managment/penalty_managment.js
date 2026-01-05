@@ -36,31 +36,45 @@ frappe.ui.form.on("penalty managment", {
                 callback: function(r) {
                     if (r.message && r.message.success) {
                         let justifications = r.message.justifications || [];
+                        console.log("justfication",justifications)
                         if (justifications.length === 0) {
                             frappe.msgprint(__("No approved justification was found for this period."));
                             return;
                         }
-                        let applied_count = 0;
-                        justifications.forEach(justif => {
-                            let found = false;
-                            (frm.doc.penalty_details || []).forEach(row => {
-                                if (row.attendance_date === j.date) {
-                                    let before = row.corrected_late_penalty || 0;
-                                    row.corrected_late_penalty = Math.max(0, before - (j.late_minutes || 0));
-                                    row.is_corrected = 1;
-                                    found = true;
-                                    applied_count++;
-                                }
-                            });
+                        // Préparer un résumé dynamique des lignes affectées
+                        let summary = '<ul>';
+                        justifications.forEach(j => {
+                            summary += `<li>Date: <b>${j.date}</b> - Minutes justified: <b>${j.late_minutes}</b></li>`;
                         });
-                        if (applied_count > 0) {
-                            calculate_totals_from_details(frm);
-                            frm.refresh_field("penalty_details");
-                            frappe.msgprint(__("Justifications appliquées à {0} ligne(s) de pénalité.", [applied_count]));
-                            schedule_save(frm);
-                        } else {
-                            frappe.msgprint(__("Aucune ligne de pénalité correspondante trouvée pour les justifications."));
-                        }
+                        summary += '</ul>';
+                        frappe.confirm(
+                            __("The following justifications will be applied and the penalties corrected:") + '<br>' + summary + '<br>' + __("Voulez-vous continuer ?"),
+                            function() {
+                                // Appliquer la correction après confirmation
+                                let applied_count = 0;
+                                justifications.forEach(j => {
+                                    (frm.doc.penalty_details || []).forEach(row => {
+                                        if (row.attendance_date === j.date) {
+                                            let before = row.corrected_late_penalty || 0;
+                                            row.corrected_late_penalty = Math.max(0, before - (j.late_minutes || 0));
+                                            row.is_corrected = 1;
+                                            applied_count++;
+                                        }
+                                    });
+                                });
+                                if (applied_count > 0) {
+                                    calculate_totals_from_details(frm);
+                                    frm.refresh_field("penalty_details");
+                                    frappe.msgprint(__("Justifications appliquées à {0} ligne(s) de pénalité.", [applied_count]));
+                                    schedule_save(frm);
+                                } else {
+                                    frappe.msgprint(__("Aucune ligne de pénalité correspondante trouvée pour les justifications."));
+                                }
+                            },
+                            function() {
+                                frappe.msgprint(__("Aucune correction appliquée."));
+                            }
+                        );
                     } else {
                         frappe.msgprint(__("Erreur lors de la récupération des justifications : ") + (r.message && r.message.error || "Erreur inconnue"));
                     }

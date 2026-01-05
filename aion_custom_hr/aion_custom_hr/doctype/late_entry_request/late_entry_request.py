@@ -9,19 +9,20 @@ import frappe
 
 
 class LateEntryRequest(Document):
-	def validate(self):
-		# Vérifier que from_datetime et to_datetime ne sont pas antérieurs à aujourd'hui
-		today = getdate(nowdate())
-		from_date = getdate(self.from_datetime) if self.from_datetime else None
-		to_date = getdate(self.to_datetime) if self.to_datetime else None
-		if from_date and from_date < today:
-			frappe.throw(_("The start date cannot be earlier than today."))
-		if to_date and to_date < today:
-			frappe.throw(_("The end date cannot be earlier than today."))
-		# Vérifier que from_datetime <= to_datetime
-		if self.from_datetime and self.to_datetime:
-			if self.from_datetime > self.to_datetime:
-				frappe.throw(_("The start date must be earlier than or equal to the end date."))
+	# def validate(self):
+	# 	# Vérifier que from_datetime et to_datetime ne sont pas antérieurs à aujourd'hui
+	# 	today = getdate(nowdate())
+	# 	from_date = getdate(self.from_datetime) if self.from_datetime else None
+	# 	to_date = getdate(self.to_datetime) if self.to_datetime else None
+	# 	if from_date and from_date < today:
+	# 		frappe.throw(_("The start date cannot be earlier than today."))
+	# 	if to_date and to_date < today:
+	# 		frappe.throw(_("The end date cannot be earlier than today."))
+	# 	# Vérifier que from_datetime <= to_datetime
+	# 	if self.from_datetime and self.to_datetime:
+	# 		if self.from_datetime > self.to_datetime:
+	# 			frappe.throw(_("The start date must be earlier than or equal to the end date."))
+    pass
 
 def notify_manager_on_late(doc, method=None):
 	if doc.reason == 'Late':
