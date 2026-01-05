@@ -254,7 +254,7 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
             SELECT 
                 name as attendance_name,
                 attendance_date,
-                shift_type,
+                shift,
                 status,
                 in_time,
                 out_time,
@@ -273,8 +273,8 @@ def load_penalties_for_period(employee, from_date, to_date, shift_type=None):
         penalties = frappe.db.sql(query, tuple(params), as_dict=True)
         
         for penalty in penalties:
-            if penalty.shift_type:
-                shift_type_doc = frappe.get_doc("Shift Type", penalty.shift_type)
+            if penalty.shift:
+                shift_type_doc = frappe.get_doc("Shift Type", penalty.shift)
                 period_applied = max(
                     penalty.late_entry_period_applied or 0,
                     penalty.early_exit_period_applied or 0
