@@ -1,16 +1,25 @@
 [
   {
     "doctype": "Custom Field",
+    "name": "Extra Hours-section_break_employee",
+    "dt": "Extra Hours",
+    "fieldname": "section_break_employee",
+    "fieldtype": "Section Break",
+    "label": "معلومات الموظف",
+    "insert_after": "title"
+  },
+  {
+    "doctype": "Custom Field",
     "name": "Extra Hours-employee",
     "dt": "Extra Hours",
     "fieldname": "employee",
     "fieldtype": "Link",
-    "label": "Employee",
+    "label": "الموظف",
     "options": "Employee",
     "reqd": 1,
     "in_list_view": 1,
     "in_standard_filter": 1,
-    "insert_after": "title"
+    "insert_after": "section_break_employee"
   },
   {
     "doctype": "Custom Field",
@@ -18,7 +27,7 @@
     "dt": "Extra Hours",
     "fieldname": "employee_name",
     "fieldtype": "Data",
-    "label": "Employee Name",
+    "label": "اسم الموظف",
     "fetch_from": "employee.employee_name",
     "read_only": 1,
     "in_list_view": 1,
@@ -26,10 +35,11 @@
   },
   {
     "doctype": "Custom Field",
-    "name": "Extra Hours-column_break_1",
+    "name": "Extra Hours-section_break_period",
     "dt": "Extra Hours",
-    "fieldname": "column_break_1",
-    "fieldtype": "Column Break",
+    "fieldname": "section_break_period",
+    "fieldtype": "Section Break",
+    "label": "الفترة",
     "insert_after": "employee_name"
   },
   {
@@ -38,10 +48,10 @@
     "dt": "Extra Hours",
     "fieldname": "from_date",
     "fieldtype": "Date",
-    "label": "From Date",
+    "label": "من تاريخ",
     "reqd": 1,
     "in_list_view": 1,
-    "insert_after": "column_break_1"
+    "insert_after": "section_break_period"
   },
   {
     "doctype": "Custom Field",
@@ -49,18 +59,18 @@
     "dt": "Extra Hours",
     "fieldname": "to_date",
     "fieldtype": "Date",
-    "label": "To Date",
+    "label": "إلى تاريخ",
     "reqd": 1,
     "in_list_view": 1,
     "insert_after": "from_date"
   },
   {
     "doctype": "Custom Field",
-    "name": "Extra Hours-section_break_1",
+    "name": "Extra Hours-section_break_details",
     "dt": "Extra Hours",
-    "fieldname": "section_break_1",
+    "fieldname": "section_break_details",
     "fieldtype": "Section Break",
-    "label": "Extra Hours Details",
+    "label": "تفاصيل الساعات الإضافية",
     "insert_after": "to_date"
   },
   {
@@ -69,17 +79,17 @@
     "dt": "Extra Hours",
     "fieldname": "extra_hours_details",
     "fieldtype": "Table",
-    "label": "Extra Hours Details",
+    "label": "تفاصيل الساعات الإضافية",
     "options": "Extra Hours Detail",
-    "insert_after": "section_break_1"
+    "insert_after": "section_break_details"
   },
   {
     "doctype": "Custom Field",
-    "name": "Extra Hours-section_break_2",
+    "name": "Extra Hours-section_break_summary",
     "dt": "Extra Hours",
-    "fieldname": "section_break_2",
+    "fieldname": "section_break_summary",
     "fieldtype": "Section Break",
-    "label": "Summary",
+    "label": "الملخص",
     "insert_after": "extra_hours_details"
   },
   {
@@ -88,10 +98,10 @@
     "dt": "Extra Hours",
     "fieldname": "total_worked_hours",
     "fieldtype": "Float",
-    "label": "Total Worked Hours",
+    "label": "إجمالي ساعات العمل",
     "precision": 2,
     "read_only": 1,
-    "insert_after": "section_break_2"
+    "insert_after": "section_break_summary"
   },
   {
     "doctype": "Custom Field",
@@ -99,18 +109,10 @@
     "dt": "Extra Hours",
     "fieldname": "total_standard_hours",
     "fieldtype": "Float",
-    "label": "Total Standard Hours",
+    "label": "إجمالي الساعات القياسية",
     "precision": 2,
     "read_only": 1,
     "insert_after": "total_worked_hours"
-  },
-  {
-    "doctype": "Custom Field",
-    "name": "Extra Hours-column_break_2",
-    "dt": "Extra Hours",
-    "fieldname": "column_break_2",
-    "fieldtype": "Column Break",
-    "insert_after": "total_standard_hours"
   },
   {
     "doctype": "Custom Field",
@@ -118,11 +120,11 @@
     "dt": "Extra Hours",
     "fieldname": "total_extra_hours",
     "fieldtype": "Float",
-    "label": "Total Extra Hours",
+    "label": "إجمالي الساعات الإضافية",
     "precision": 2,
     "read_only": 1,
     "in_list_view": 1,
-    "insert_after": "column_break_2"
+    "insert_after": "total_standard_hours"
   },
   {
     "doctype": "Custom Field",
@@ -130,7 +132,7 @@
     "dt": "Extra Hours",
     "fieldname": "total_approved_extra_hours",
     "fieldtype": "Float",
-    "label": "Total Approved Extra Hours",
+    "label": "إجمالي الساعات الإضافية المعتمدة",
     "precision": 2,
     "read_only": 1,
     "in_list_view": 1,
@@ -138,11 +140,11 @@
   },
   {
     "doctype": "Custom Field",
-    "name": "Extra Hours-section_break_3",
+    "name": "Extra Hours-section_break_approval",
     "dt": "Extra Hours",
-    "fieldname": "section_break_3",
+    "fieldname": "section_break_approval",
     "fieldtype": "Section Break",
-    "label": "Approval",
+    "label": "الموافقة",
     "insert_after": "total_approved_extra_hours"
   },
   {
@@ -151,12 +153,12 @@
     "dt": "Extra Hours",
     "fieldname": "approval_status",
     "fieldtype": "Select",
-    "label": "Approval Status",
+    "label": "حالة الموافقة",
     "options": "Draft\nPending Approval\nApproved\nRejected",
     "default": "Draft",
     "in_list_view": 1,
     "in_standard_filter": 1,
-    "insert_after": "section_break_3"
+    "insert_after": "section_break_approval"
   },
   {
     "doctype": "Custom Field",
@@ -164,18 +166,10 @@
     "dt": "Extra Hours",
     "fieldname": "approved_by",
     "fieldtype": "Link",
-    "label": "Approved By",
+    "label": "تمت الموافقة من قبل",
     "options": "User",
     "read_only": 1,
     "insert_after": "approval_status"
-  },
-  {
-    "doctype": "Custom Field",
-    "name": "Extra Hours-column_break_3",
-    "dt": "Extra Hours",
-    "fieldname": "column_break_3",
-    "fieldtype": "Column Break",
-    "insert_after": "approved_by"
   },
   {
     "doctype": "Custom Field",
@@ -183,9 +177,9 @@
     "dt": "Extra Hours",
     "fieldname": "approval_date",
     "fieldtype": "Datetime",
-    "label": "Approval Date",
+    "label": "تاريخ الموافقة",
     "read_only": 1,
-    "insert_after": "column_break_3"
+    "insert_after": "approved_by"
   },
   {
     "doctype": "Custom Field",
@@ -193,7 +187,7 @@
     "dt": "Extra Hours",
     "fieldname": "approval_comments",
     "fieldtype": "Text",
-    "label": "Approval Comments",
+    "label": "ملاحظات الموافقة",
     "insert_after": "approval_date"
   }
 ]
