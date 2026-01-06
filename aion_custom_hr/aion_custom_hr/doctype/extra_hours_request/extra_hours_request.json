@@ -91,12 +91,12 @@
      "fieldtype": "Float",
      "label": "Extra Minutes",
      "read_only": 1,
-     "description": "Durée des heures supplémentaires en minutes (calculée automatiquement)"
+     "description": "Overtime hours in minutes (calculated automatically)"
     },
     {
      "fieldname": "reason_section",
      "fieldtype": "Section Break",
-     "label": "Motif des heures supplémentaires"
+     "label": "Overtime Reason"
     },
     {
      "fieldname": "reason",
