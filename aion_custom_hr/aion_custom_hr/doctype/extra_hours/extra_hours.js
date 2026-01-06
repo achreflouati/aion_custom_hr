@@ -40,19 +40,23 @@ function apply_extra_hours_justifications(frm) {
 				frappe.confirm(
 					__('سيتم تطبيق المبررات التالية:') + '<br>' + summary + '<br>' + __('هل تريد المتابعة؟'),
 					function() {
-						// تطبيق التصحيح بعد التأكيد
 						let applied_count = 0;
+						let existing_names = (frm.doc.extra_hours_details || []).map(row => row.attendance_name);
 						justifications.forEach(j => {
-							// (frm.doc.details || []).forEach(row => {
-							//     if (row.attendance_date === j.date) {
-							//         row.extra_minutes_justified = (row.extra_minutes_justified || 0) + (j.extra_minutes || 0);
-							//         applied_count++;
-							//     }
-							// });
+							if (!existing_names.includes(j.name)) {
+								let row = frm.add_child('extra_hours_details');
+								row.attendance_date = j.date;
+								// Laisser attendance_name vide si pas d'attendance liée
+								// row.attendance_name = "";
+								row.extra_hours = (j.extra_minutes || 0) / 60.0;
+								row.approved_extra_hours = (j.extra_minutes || 0) / 60.0;
+								row.status = 'Approved';
+								row.comments = __('مبرر مستورد من EXTRA HOURS REQUEST');
+								applied_count++;
+							}
 						});
+						frm.refresh_field('extra_hours_details');
 						frappe.msgprint(__('تم تطبيق المبررات على {0} صف/صفوف.', [applied_count]));
-						// frm.refresh_field('details');
-						// schedule_save(frm);
 					},
 					function() {
 						frappe.msgprint(__('لم يتم تطبيق أي تصحيح.'));

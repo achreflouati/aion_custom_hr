@@ -5,10 +5,18 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "test",
   "amended_from"
  ],
  "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "PENALTY-.YYYY.-",
+   "reqd": 1
+  },
   {
    "fieldname": "test",
    "fieldtype": "Data",
@@ -33,6 +41,7 @@
  "modified_by": "Administrator",
  "module": "aion_custom_hr",
  "name": "penalty managment",
+ "autoname": "naming_series:.#####",
  "owner": "Administrator",
  "permissions": [
   {

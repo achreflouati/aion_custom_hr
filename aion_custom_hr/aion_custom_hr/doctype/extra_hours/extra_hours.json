@@ -5,9 +5,17 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "section_break_yxva"
  ],
  "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "EXTRA-HRS-.YYYY.-",
+   "reqd": 1
+  },
   {
    "fieldname": "section_break_yxva",
    "fieldtype": "Section Break"
@@ -20,6 +28,7 @@
  "modified_by": "Administrator",
  "module": "aion_custom_hr",
  "name": "Extra Hours",
+ "autoname": "naming_series:.#####",
  "owner": "Administrator",
  "permissions": [
   {
