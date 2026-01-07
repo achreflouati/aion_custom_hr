@@ -1,3 +1,5 @@
+
+
 app_name = "aion_custom_hr"
 app_title = "aion_custom_hr"
 app_publisher = "ard"
@@ -222,7 +224,14 @@ doc_events = {
 
 # Scheduled Tasks
 # ---------------
-
+scheduler_events = {
+    "cron": {
+        # Tous les jours à 23h
+        "0 23 * * *": [
+            "aion_custom_hr.api.make_attendance.scheduled_auto_attendance_and_extra_hours"
+        ]
+    }
+}
 # scheduler_events = {
 # 	"all": [
 # 		"aion_custom_hr.tasks.all"

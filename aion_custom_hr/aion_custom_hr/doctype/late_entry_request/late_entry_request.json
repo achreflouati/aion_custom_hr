@@ -17,6 +17,7 @@
         "to_datetime",
         "from_time",
         "to_time",
+        "nb_hours_early_exit",
         "nb_hours_late",
         "reason_section",
         "reason",
@@ -104,6 +105,13 @@
             "label": "NB Hours Late",
             "read_only": 1,
             "description": "Delay duration in hours (calculated automatically)"
+        },
+        {
+            "fieldname": "nb_hours_early_exit",
+            "fieldtype": "Float",
+            "label": "NB Hours Early Exit",
+            "read_only": 1,
+            "description": "Early exit duration in minutes (calculated automatically)"
         },
         {
             "fieldname": "reason_section",

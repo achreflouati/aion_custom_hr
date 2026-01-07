@@ -38,15 +38,24 @@ frappe.ui.form.on("Late Entry Request", {
 			frm.set_df_property("to_datetime", "read_only", 1);
 		}
 	},
-	reason: function(frm) {
-		handle_reason_logic(frm);
-	},
-	from_time: function(frm) {
-		calculate_nb_minutes_late(frm);
-	},
-	to_time: function(frm) {
-		calculate_nb_minutes_late(frm);
-	},
+	   reason: function(frm) {
+		   handle_reason_logic(frm);
+		   // Calcul automatique après changement de raison
+		   setTimeout(function() {
+			   calculate_nb_minutes_late(frm);
+			   calculate_nb_minutes_early_exit(frm);
+			   frm.refresh_field("nb_hours_late");
+			   frm.refresh_field("nb_hours_early_exit");
+		   }, 300);
+	   },
+	   from_time: function(frm) {
+		   calculate_nb_minutes_late(frm);
+		   calculate_nb_minutes_early_exit(frm);
+	   },
+	   to_time: function(frm) {
+		   calculate_nb_minutes_late(frm);
+		   calculate_nb_minutes_early_exit(frm);
+	   },
 	from_date: function(frm) {
 		handle_reason_logic(frm);
 	},
@@ -96,53 +105,91 @@ frappe.ui.form.on("Late Entry Request", {
 
 async function handle_reason_logic(frm) {
 	const reason = frm.doc.reason;
-	if (!frm.doc.shift || !frm.doc.employee) return;
+	   if (!frm.doc.shift || !frm.doc.employee) return;
 
-	// Fetch shift timings from server (customize as needed)
-	frappe.call({
-		method: "frappe.client.get",
-		args: {
-			doctype: "Shift Type",
-			name: frm.doc.shift
-		},
-		callback: function(r) {
-			if (!r.message) return;
-			const shift = r.message;
-			// Assume fields: start_time, end_time (adjust if needed)
-			if (reason === "Late") {
-				frm.set_df_property("from_time", "read_only", 0);
-				frm.set_df_property("to_time", "read_only", 1);
-				if (shift.end_time) {
-					frm.set_value("to_time", shift.end_time);
-				}
-			} else if (reason === "Early Exit") {
-				frm.set_df_property("from_time", "read_only", 1);
-				frm.set_df_property("to_time", "read_only", 0);
-				if (shift.start_time) {
-					frm.set_value("from_time", shift.start_time);
-				}
-			} else {
-				frm.set_df_property("from_time", "read_only", 0);
-				frm.set_df_property("to_time", "read_only", 0);
-			}
+	   frappe.call({
+		   method: "frappe.client.get",
+		   args: {
+			   doctype: "Shift Type",
+			   name: frm.doc.shift
+		   },
+		   callback: function(r) {
+			   if (!r.message) return;
+			   const shift = r.message;
+			   if (reason === "Early Exit") {
+				   frm.set_df_property("from_time", "read_only", 0);
+				   frm.set_df_property("to_time", "read_only", 1);
+				   if (shift.end_time) {
+					   frm.set_value("to_time", shift.end_time);
+				   }
+				   frm.set_df_property("nb_hours_early_exit", "hidden", 0);
+				   frm.set_df_property("nb_hours_late", "hidden", 1);
+				   frm.refresh_field("nb_hours_early_exit");
+				   frm.refresh_field("nb_hours_late");
+			   } else if (reason === "Late") {
+				   frm.set_df_property("from_time", "read_only", 1);
+				   frm.set_df_property("to_time", "read_only", 0);
+				   if (shift.start_time) {
+					   frm.set_value("from_time", shift.start_time);
+				   }
+				   frm.set_df_property("nb_hours_early_exit", "hidden", 1);
+				   frm.set_df_property("nb_hours_late", "hidden", 0);
+				   frm.refresh_field("nb_hours_early_exit");
+				   frm.refresh_field("nb_hours_late");
+			   } else {
+				   frm.set_df_property("from_time", "read_only", 0);
+				   frm.set_df_property("to_time", "read_only", 0);
+				   frm.set_df_property("nb_hours_early_exit", "hidden", 1);
+				   frm.set_df_property("nb_hours_late", "hidden", 1);
+				   frm.refresh_field("nb_hours_early_exit");
+				   frm.refresh_field("nb_hours_late");
+			   }
+		   }
+	   });
+	}
+
+ function calculate_nb_minutes_early_exit(frm) {
+		console.log("Calculating nb_hours_early_exit...");
+
+		if (frm.doc.reason === "Early Exit" && frm.doc.from_time && frm.doc.to_time) {
+		// Conversion des heures "HH:MM:SS" en minutes
+		
+		function timeToMinutes(t) {
+			const [h, m, s] = t.split(":").map(Number);
+			return h * 60 + m + (s ? s / 60 : 0);
 		}
-	});
-}
-
+		const fromMins = timeToMinutes(frm.doc.from_time);
+		const toMins = timeToMinutes(frm.doc.to_time);
+		let diff = toMins - fromMins;
+		if (diff < 0) diff = 0;
+		console.log("Difference in minutes:", diff);
+		frm.set_value("nb_hours_early_exit", Math.round(diff));
+	} else {
+		frm.set_value("nb_hours_early_exit", 0);
+	}
+		  // Si le motif est "Early Exit", calculer la différence en minutes entre shift_end et to_time
+		  
+	   }
+	  
 
 function calculate_nb_minutes_late(frm) {
-	// Optionally, implement calculation based on from_date, to_date, from_time, to_time
-	if (frm.doc.from_date && frm.doc.to_date && frm.doc.from_time && frm.doc.to_time) {
-		const from = frappe.datetime.combine_date_and_time(frm.doc.from_date, frm.doc.from_time);
-		const to = frappe.datetime.combine_date_and_time(frm.doc.to_date, frm.doc.to_time);
-		if (from && to && to > from) {
-			const diff_ms = to - from;
-			const diff_hours = diff_ms / (1000 * 60 * 60);
-			frm.set_value("nb_hours_late", Math.round(diff_hours * 100) / 100);
-		} else {
-			frm.set_value("nb_hours_late", 0);
+	console.log("Calculating nb_hours_late1...");
+	// Si le motif est "Late", calculer la différence entre from_time et to_time en heures décimales
+	if (frm.doc.reason === "Late" && frm.doc.from_time && frm.doc.to_time) {
+		// Conversion des heures "HH:MM:SS" en minutes
+		console.log("Calculating nb_hours_late...");
+		function timeToMinutes(t) {
+			const [h, m, s] = t.split(":").map(Number);
+			return h * 60 + m + (s ? s / 60 : 0);
 		}
+		const fromMins = timeToMinutes(frm.doc.from_time);
+		const toMins = timeToMinutes(frm.doc.to_time);
+		let diff = toMins - fromMins;
+		if (diff < 0) diff = 0;
+		console.log("Difference in minutes:", diff);
+		frm.set_value("nb_hours_late", Math.round(diff));
 	} else {
 		frm.set_value("nb_hours_late", 0);
 	}
 }
+

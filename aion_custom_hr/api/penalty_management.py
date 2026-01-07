@@ -1,16 +1,13 @@
+
 import frappe
 from frappe import _
-from frappe.utils import getdate, add_days, date_diff, flt
-from frappe.model.document import Document
-
 
 
 
 @frappe.whitelist()
-def get_approved_late_justifications(employee, from_date, to_date):
+def get_approved_justifications(employee, from_date, to_date):
     """
-    Retourne le total des minutes justifiées (Late Entry Request approuvées) pour un employé et une période donnée.
-    Utilise le champ nb_hours_late (en heures), converti en minutes.
+    Retourne les justifications approuvées (Late et Early Exit) pour un employé et une période donnée.
     """
     try:
         justifications = frappe.db.get_all(
@@ -21,20 +18,67 @@ def get_approved_late_justifications(employee, from_date, to_date):
                 "to_datetime": ["<=", to_date],
                 "workflow_state": "Approved"
             },
-            fields=["name", "from_datetime", "nb_hours_late"]
+            fields=["name", "from_datetime", "nb_hours_late", "nb_hours_early_exit", "reason"]
         )
-        result = []
+        late_justifications = []
+        early_justifications = []
         for j in justifications:
-            # nb_hours_late est en minutes (selon usage réel)
-            result.append({
-                "date": str(j.from_datetime.date()),
-                "late_minutes": j.nb_hours_late or 0,
-                "name": j.name
-            })
-        return {"success": True, "justifications": result}
+            from_dt = j.from_datetime
+            if hasattr(from_dt, 'date') and callable(getattr(from_dt, 'date', None)):
+                date_str = str(from_dt.date())
+            else:
+                date_str = str(from_dt)
+            if j.reason == "Late":
+                late_justifications.append({
+                    "date": date_str,
+                    "late_minutes": j.nb_hours_late or 0,
+                    "name": j.name
+                })
+            elif j.reason == "Early Exit":
+                early_justifications.append({
+                    "date": date_str,
+                    "early_minutes": j.nb_hours_early_exit or 0,
+                    "name": j.name
+                })
+        return {"success": True, "late_justifications": late_justifications, "early_justifications": early_justifications}
     except Exception as e:
-       
         return {"success": False, "error": str(e)}
+    
+# @frappe.whitelist()
+# def get_approved_late_justifications(employee, from_date, to_date):
+#     """
+#     Retourne le total des minutes justifiées (Late Entry Request approuvées) pour un employé et une période donnée.
+#     Utilise le champ nb_hours_late (en heures), converti en minutes.
+#     """
+#     try:
+#         justifications = frappe.db.get_all(
+#             "Late Entry Request",
+#             filters={
+#                 "employee": employee,
+#                 "from_datetime": [">=", from_date],
+#                 "to_datetime": ["<=", to_date],
+#                 "workflow_state": "Approved"
+#             },
+#             fields=["name", "from_datetime", "nb_hours_late"]
+#         )
+#         result = []
+#         for j in justifications:
+#             # nb_hours_late est en minutes (selon usage réel)
+#             # Correction: j.from_datetime peut déjà être un objet date
+#             from_dt = j.from_datetime
+#             if hasattr(from_dt, 'date') and callable(getattr(from_dt, 'date', None)):
+#                 date_str = str(from_dt.date())
+#             else:
+#                 date_str = str(from_dt)
+#             result.append({
+#                 "date": date_str,
+#                 "late_minutes": j.nb_hours_late or 0,
+#                 "name": j.name
+#             })
+#         return {"success": True, "justifications": result}
+#     except Exception as e:
+       
+#         return {"success": False, "error": str(e)}
 @frappe.whitelist()
 def check_new_penalties_for_shift(shift_type, from_date, to_date):
     """

@@ -8,19 +8,20 @@ from frappe.utils import getdate, nowdate
 import frappe
 
 class EXTRAHOURSREQUEST(Document):
-	def validate(self):
-		# التحقق من أن تاريخ البداية والنهاية ليسا في الماضي
-		today = getdate(nowdate())
-		from_date = getdate(self.from_datetime) if self.from_datetime else None
-		to_date = getdate(self.to_datetime) if self.to_datetime else None
-		if from_date and from_date < today:
-			frappe.throw(_("لا يمكن أن يكون تاريخ البداية أقدم من اليوم."))
-		if to_date and to_date < today:
-			frappe.throw(_("لا يمكن أن يكون تاريخ النهاية أقدم من اليوم."))
-		# التحقق أن البداية <= النهاية
-		if self.from_datetime and self.to_datetime:
-			if self.from_datetime > self.to_datetime:
-				frappe.throw(_("يجب أن يكون تاريخ البداية قبل أو يساوي تاريخ النهاية."))
+	# def validate(self):
+	# 	# التحقق من أن تاريخ البداية والنهاية ليسا في الماضي
+	# 	today = getdate(nowdate())
+	# 	from_date = getdate(self.from_datetime) if self.from_datetime else None
+	# 	to_date = getdate(self.to_datetime) if self.to_datetime else None
+	# 	if from_date and from_date < today:
+	# 		frappe.throw(_("لا يمكن أن يكون تاريخ البداية أقدم من اليوم."))
+	# 	if to_date and to_date < today:
+	# 		frappe.throw(_("لا يمكن أن يكون تاريخ النهاية أقدم من اليوم."))
+	# 	# التحقق أن البداية <= النهاية
+	# 	if self.from_datetime and self.to_datetime:
+	# 		if self.from_datetime > self.to_datetime:
+	# 			frappe.throw(_("يجب أن يكون تاريخ البداية قبل أو يساوي تاريخ النهاية."))
+	pass
 
 def notify_manager_on_extra_hours(doc, method=None):
 	if doc.reason in ('Extra Hours', 'Surplus'):

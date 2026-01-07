@@ -27,7 +27,7 @@ frappe.ui.form.on("penalty managment", {
                 return;
             }
             frappe.call({
-                method: 'aion_custom_hr.api.penalty_management.get_approved_late_justifications',
+                method: 'aion_custom_hr.api.penalty_management.get_approved_justifications',
                 args: {
                     employee: frm.doc.employee,
                     from_date: frm.doc.from_date,
@@ -35,16 +35,19 @@ frappe.ui.form.on("penalty managment", {
                 },
                 callback: function(r) {
                     if (r.message && r.message.success) {
-                        let justifications = r.message.justifications || [];
-                        console.log("justfication",justifications)
-                        if (justifications.length === 0) {
+                        let late_justifications = r.message.late_justifications || [];
+                        let early_justifications = r.message.early_justifications || [];
+                        if (late_justifications.length === 0 && early_justifications.length === 0) {
                             frappe.msgprint(__("لم يتم العثور على أي مبرر معتمد لهذه الفترة."));
                             return;
                         }
                         // Préparer un résumé dynamique des lignes affectées
                         let summary = '<ul>';
-                        justifications.forEach(j => {
-                            summary += `<li>التاريخ: <b>${j.date}</b> - دقائق مبررة: <b>${j.late_minutes}</b></li>`;
+                        late_justifications.forEach(j => {
+                            summary += `<li>تأخير - التاريخ: <b>${j.date}</b> - دقائق مبررة: <b>${j.late_minutes}</b></li>`;
+                        });
+                        early_justifications.forEach(j => {
+                            summary += `<li>خروج مبكر - التاريخ: <b>${j.date}</b> - دقائق مبررة: <b>${j.early_minutes}</b></li>`;
                         });
                         summary += '</ul>';
                         frappe.confirm(
@@ -52,13 +55,27 @@ frappe.ui.form.on("penalty managment", {
                             function() {
                                 // Appliquer la correction après confirmation
                                 let applied_count = 0;
-                                justifications.forEach(j => {
+                                // Late justifications
+                                late_justifications.forEach(j => {
                                     (frm.doc.penalty_details || []).forEach(row => {
                                         if (row.attendance_date === j.date) {
                                             let before = row.corrected_late_penalty || 0;
                                             let coef = row.coefficient_used || 1;
                                             let justified_minutes = (j.late_minutes || 0) * coef;
                                             row.corrected_late_penalty = Math.max(0, before - justified_minutes);
+                                            row.is_corrected = 1;
+                                            applied_count++;
+                                        }
+                                    });
+                                });
+                                // Early exit justifications
+                                early_justifications.forEach(j => {
+                                    (frm.doc.penalty_details || []).forEach(row => {
+                                        if (row.attendance_date === j.date) {
+                                            let before = row.corrected_early_penalty || 0;
+                                            let coef = row.coefficient_used || 1;
+                                            let justified_minutes = (j.early_minutes || 0) * coef;
+                                            row.corrected_early_penalty = Math.max(0, before - justified_minutes);
                                             row.is_corrected = 1;
                                             applied_count++;
                                         }
