@@ -15,6 +15,8 @@
         "column_break_1",
         "from_datetime",
         "to_datetime",
+        "from_time",
+        "to_time",
         "nb_hours_late",
         "reason_section",
         "reason",
@@ -112,7 +114,7 @@
             "fieldname": "reason",
             "fieldtype": "Select",
             "label": "Reason",
-            "options": "Late",
+            "options": "Late\nEarly Exit\nAuthorized Leave",
             "reqd": 1
         },
         {
