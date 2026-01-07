@@ -76,16 +76,26 @@
         },
         {
             "fieldname": "from_datetime",
-            "fieldtype": "Datetime",
-            "label": "From Datetime",
-            "reqd": 1
+                "fieldtype": "Date",
+                "label": "From Date",
+                "reqd": 1
         },
         {
-            "fieldname": "to_datetime",
-            "fieldtype": "Datetime",
-            "label": "To Datetime",
-            "reqd": 1
+                "fieldname": "to_datetime",
+                "fieldtype": "Date",
+                "label": "To Date",
+                "reqd": 1
         },
+            {
+                "fieldname": "from_time",
+                "fieldtype": "Time",
+                "label": "From time"
+            },
+            {
+                "fieldname": "to_time",
+                "fieldtype": "Time",
+                "label": "To time"
+            },
         {
             "fieldname": "nb_hours_late",
             "fieldtype": "Float",

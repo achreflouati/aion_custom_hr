@@ -56,7 +56,9 @@ frappe.ui.form.on("penalty managment", {
                                     (frm.doc.penalty_details || []).forEach(row => {
                                         if (row.attendance_date === j.date) {
                                             let before = row.corrected_late_penalty || 0;
-                                            row.corrected_late_penalty = Math.max(0, before - (j.late_minutes || 0));
+                                            let coef = row.coefficient_used || 1;
+                                            let justified_minutes = (j.late_minutes || 0) * coef;
+                                            row.corrected_late_penalty = Math.max(0, before - justified_minutes);
                                             row.is_corrected = 1;
                                             applied_count++;
                                         }
