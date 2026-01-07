@@ -3,6 +3,34 @@
 
 
 frappe.ui.form.on("Late Entry Request", {
+	onload: function(frm) {
+		// Auto-fill employee with current session user if empty
+		if (!frm.doc.employee) {
+			frappe.call({
+				method: "frappe.client.get_list",
+				args: {
+					doctype: "Employee",
+					filters: { user_id: frappe.session.user },
+					fields: ["name", "employee_name"]
+				},
+				callback: function(r) {
+					if (r.message && r.message.length > 0) {
+						frm.set_value("employee", r.message[0].name);
+						if (r.message[0].employee_name) {
+							frm.set_value("employee_name", r.message[0].employee_name);
+						} else {
+							frappe.msgprint("Employee name not found for this user.", "Warning");
+						}
+					} else {
+						frappe.msgprint("No Employee record is linked to your user account. Please contact HR.", "Warning");
+					}
+				},
+				error: function() {
+					frappe.msgprint("An error occurred while fetching the Employee record.", "Error");
+				}
+			});
+		}
+	},
 	from_datetime: function(frm) {
 		// Always auto-fill to_datetime with from_datetime
 		if (frm.doc.from_datetime) {
@@ -29,7 +57,7 @@ frappe.ui.form.on("Late Entry Request", {
 		handle_reason_logic(frm);
 	},
 	employee: function(frm) {
-		// Try to auto-fill shift from employee
+		// Try to auto-fill shift from employee and set employee_name
 		if (frm.doc.employee) {
 			frappe.call({
 				method: "frappe.client.get",
@@ -46,9 +74,21 @@ frappe.ui.form.on("Late Entry Request", {
 							frm.set_value("shift", null);
 							frappe.msgprint("This employee does not have a default shift assigned.", "Warning");
 						}
+						if (emp.employee_name) {
+							frm.set_value("employee_name", emp.employee_name);
+						} else {
+							frappe.msgprint("Employee name not found for this employee record.", "Warning");
+						}
+					} else {
+						frappe.msgprint("Employee record not found.", "Warning");
 					}
+				},
+				error: function() {
+					frappe.msgprint("An error occurred while fetching the Employee record.", "Error");
 				}
 			});
+		} else {
+			frappe.msgprint("Please select an employee.", "Warning");
 		}
 		handle_reason_logic(frm);
 	}
