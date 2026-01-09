@@ -219,6 +219,10 @@ doc_events = {
     "Late Entry Request": {
         "after_insert": "aion_custom_hr.aion_custom_hr.doctype.late_entry_request.late_entry_request.notify_manager_on_late",
         "on_update": "aion_custom_hr.aion_custom_hr.doctype.late_entry_request.late_entry_request.notify_employee_on_state_change"
+    },
+    "Extra Hours Request": {
+        "after_insert": "aion_custom_hr.aion_custom_hr.doctype.extra_hours_request.extra_hours_request.notify_manager_on_extra_hours",
+        "on_update": "aion_custom_hr.aion_custom_hr.doctype.extra_hours_request.extra_hours_request.notify_employee_on_state_change"
     }
 }
 

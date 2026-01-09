@@ -1,3 +1,5 @@
+# Création automatique des demandes de retard à partir des présences
+
 import frappe
 from frappe.utils import now_datetime
 
@@ -111,7 +113,81 @@ def create_extra_hours_requests_from_attendance():
 Module for custom attendance creation logic in aion_custom_hr.
 Add your attendance creation functions and utilities here.
 """
-
+@frappe.whitelist()
+def create_late_entry_requests_from_attendance():
+    """
+    Parcourt toutes les présences, vérifie les retards, et crée un Late Entry Request pour chaque employé concerné.
+    """
+    try:
+        attendances = frappe.get_all(
+            "Attendance",
+            fields=["name", "employee", "attendance_date", "shift", "in_time", "out_time"],
+            filters={"docstatus": 1}
+        )
+        created_requests = []
+        for att in attendances:
+            # Récupérer le début de shift
+            shift_doc = frappe.get_doc("Shift Type", att.get("shift")) if att.get("shift") else None
+            shift_start = None
+            if shift_doc and hasattr(shift_doc, "start_time"):
+                shift_start = shift_doc.start_time
+            in_time = att.get("in_time")
+            late_minutes = 0
+            if shift_start and in_time:
+                from datetime import datetime
+                fmt = "%H:%M:%S"
+                try:
+                    # Extraire l'heure de in_time si c'est un datetime complet
+                    in_time_str = str(in_time)
+                    if len(in_time_str) > 8 and " " in in_time_str:
+                        in_time_str = in_time_str.strip().split(" ")[-1]
+                    shift_start_dt = datetime.strptime(str(shift_start), fmt)
+                    in_time_dt = datetime.strptime(in_time_str, fmt)
+                    delta = (in_time_dt - shift_start_dt).total_seconds() / 60
+                    if delta > 0:
+                        late_minutes = delta
+                except Exception as e:
+                    frappe.log_error(f"Erreur de calcul late entry pour attendance {att['name']}: {str(e)}")
+            if late_minutes > 0:
+                # Vérifier si une demande existe déjà pour cette présence
+                date_str = str(att["attendance_date"])
+                from_dt = date_str + " " + str(shift_start) if shift_start else date_str + " 00:00:00"
+                exists = frappe.get_all(
+                    "Late Entry Request",
+                    filters={
+                        "employee": att["employee"],
+                        "shift": att.get("shift"),
+                        "from_datetime": from_dt
+                    }
+                )
+                if not exists:
+                    # Si in_time contient déjà la date complète, on l'utilise tel quel, sinon on concatène
+                    in_time_str = str(in_time)
+                    if in_time_str and len(in_time_str) > 10 and in_time_str[4] == '-' and in_time_str[7] == '-':
+                        to_dt = in_time_str
+                    elif in_time_str:
+                        to_dt = date_str + " " + in_time_str
+                    else:
+                        to_dt = date_str + " 00:00:00"
+                    doc = frappe.get_doc({
+                        "doctype": "Late Entry Request",
+                        "naming_series": "LATE-REQ-.YYYY.-.MM.-.#####",
+                        "employee": att["employee"],
+                        "shift": att.get("shift"),
+                        "from_datetime": from_dt,
+                        "to_datetime": to_dt,
+                        "nb_hours_late": round(late_minutes / 60, 2),
+                        "reason": "Late"
+                    })
+                    doc.insert(ignore_permissions=True)
+                    created_requests.append(doc.name)
+        return {
+            "created": created_requests,
+            "message": f"{len(created_requests)} Late Entry Requests created."
+        }
+    except Exception as e:
+        frappe.log_error(f"Erreur lors de la création des Late Entry Requests: {str(e)}")
+        frappe.throw(f"Erreur lors de la création des Late Entry Requests: {str(e)}")
 
 def scheduled_auto_attendance_and_extra_hours():
     auto_mark_attendance_for_enabled_shifts()

@@ -4,15 +4,15 @@
 frappe.ui.form.on('penalty managment', {
     refresh: function(frm) {
         // Ajouter bouton pour charger les attendances
-        if (!frm.doc.__islocal) {
-            frm.add_custom_button(__('Load Attendances'), function() {
-                load_attendances_for_period(frm);
-            });
+        // if (!frm.doc.__islocal) {
+        //     frm.add_custom_button(__('Load Attendances'), function() {
+        //         load_attendances_for_period(frm);
+        //     });
             
-            frm.add_custom_button(__('Check New Penalties'), function() {
-                check_new_penalties(frm);
-            });
-        }
+        //     frm.add_custom_button(__('Check New Penalties'), function() {
+        //         check_new_penalties(frm);
+        //     });
+        // }
     },
     
     employee: function(frm) {

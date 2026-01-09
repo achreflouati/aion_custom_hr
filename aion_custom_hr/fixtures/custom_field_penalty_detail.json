@@ -1,4 +1,23 @@
-[
+  [
+    {
+      "doctype": "Custom Field",
+      "name": "Penalty Detail-justifications_btn2",
+      "dt": "Penalty Detail",
+      "fieldname": "justifications_btn2",
+      "fieldtype": "Button",
+      "label": "Justifications",
+      "insert_after": "is_corrected"
+    },
+    {
+      "doctype": "Custom Field",
+      "name": "Penalty Detail-status_justification",
+      "dt": "Penalty Detail",
+      "fieldname": "status_justification",
+      "fieldtype": "Select",
+      "label": "Status Justification",
+      "options": "Approved\nPending\nRejected",
+      "insert_after": "justifications_btn2"
+    },
   {
     "doctype": "Custom Field",
     "name": "Penalty Detail-attendance_date",
@@ -45,6 +64,7 @@
     "in_list_view": 1,
     "insert_after": "shift_type"
   },
+
   {
     "doctype": "Custom Field",
     "name": "Penalty Detail-in_time",
