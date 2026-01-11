@@ -62,13 +62,48 @@ frappe.ui.form.on('Extra Hours Detail', {
     approved_extra_hours: function(frm, cdt, cdn) {
         calculate_totals(frm);
     },
-    
+
     status: function(frm, cdt, cdn) {
         calculate_totals(frm);
     },
-    
+
     extra_hours_details_remove: function(frm) {
         calculate_totals(frm);
+    },
+
+    justification_btn: function(frm, cdt, cdn) {
+        var child = locals[cdt][cdn];
+        frappe.prompt([
+            {
+                fieldname: 'justification',
+                label: 'التبرير',
+                fieldtype: 'Small Text',
+                reqd: true,
+                default: child.justification_text || ''
+            }
+        ], function(values) {
+            frappe.model.set_value(cdt, cdn, 'justification_text', values.justification).then(function() {
+                frm.save().then(function() {
+                    frappe.msgprint('تم حفظ التبرير بنجاح');
+                    // Envoi d'un mail au responsable (report_to)
+                    if(frm.doc.employee) {
+                        frappe.call({
+                            method: 'aion_custom_hr.extra_hours.send_extra_hours_justification_mail',
+                            args: {
+                                employee: frm.doc.employee,
+                                docname: frm.doc.name,
+                                justification: values.justification
+                            },
+                            callback: function(r) {
+                                if(r.message && r.message.success) {
+                                    frappe.msgprint('تم إرسال إشعار إلى المسؤول المباشر');
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        }, 'تقديم التبرير');
     }
 });
 

@@ -27,6 +27,7 @@ app_license = "mit"
 # Includes in <head>
 # ------------------
 fixtures = [
+    
     "attendance_custom_fields.json",
     "attendance_status_property_setter.json",
     "contract_custom_field.json",
@@ -73,6 +74,7 @@ fixtures = [
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
+# Register form and list view JS for Attendance
 doctype_js = {
     "Attendance": "public/js/attendance_status.js",
     "Appraisal": "public/js/appraisal_monthly_score.js",
@@ -85,7 +87,9 @@ doctype_js = {
     "Payroll Entry": "public/js/Payroll_Entry.js",
     "Training Event": "public/js/training_event.js"
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {
+    "Attendance": "public/js/attendance_list.js"
+}
 # doctype_treze_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 

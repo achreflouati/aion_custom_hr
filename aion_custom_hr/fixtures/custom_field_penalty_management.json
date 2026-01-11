@@ -14,15 +14,29 @@
   },
   {
     "doctype": "Custom Field",
+    "name": "penallty managment-employee_name",
+    "dt": "penalty managment",
+    "fieldname": "employee_name",
+    "fieldtype": "Data",
+    "label": "Employee Name",
+    "read_only": 1,
+    "insert_after": "employee",
+    "fetch_from": "employee.employee_name"
+  },
+
+  {
+    "doctype": "Custom Field",
     "name": "penalty managment-shift_type",
     "dt": "penalty managment",
     "fieldname": "shift_type",
     "fieldtype": "Link",
     "label": "Shift Type",
     "options": "Shift Type",
+    "fetch_from":"employee.default_shift",
+    "read_only": 1,
     "in_list_view": 1,
     "in_standard_filter": 1,
-    "insert_after": "employee"
+    "insert_after": "employee_name"
   },
   {
     "doctype": "Custom Field",

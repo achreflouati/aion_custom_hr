@@ -1,3 +1,4 @@
+   
 // Copyright (c) 2025, ard and contributors
 // For license information, please see license.txt
 
@@ -135,21 +136,110 @@ frappe.ui.form.on("Penalty Detail", {
         calculate_totals_from_details(frm);
         schedule_save(frm);
     },
-    
+
     corrected_early_penalty: function(frm, cdt, cdn) {
         mark_as_modified(frm, cdt, cdn);
         calculate_totals_from_details(frm);
         schedule_save(frm);
     },
-    
+
     penalty_details_remove: function(frm) {
         calculate_totals_from_details(frm);
         schedule_save(frm);
     },
-    
+
     penalty_details_add: function(frm, cdt, cdn) {
         schedule_save(frm);
+    },
+
+    correction_note: function(frm, cdt, cdn) {
+        var row = locals[cdt][cdn];
+        if (row.correction_note && frm.doc.name) {
+            console.log("Sending notification for row:", row);
+            // Trouver l'index (1-based) de la ligne dans penalty_details
+            var idx = 1;
+            (frm.doc.penalty_details || []).forEach(function(r, i) {
+                if (r.name === row.name) {
+                    idx = i + 1;
+                }
+            });
+            frappe.call({
+                method: "aion_custom_hr.aion_custom_hr.doctype.penalty_managment.penalty_managment.notify_report_to_on_justification",
+                args: {
+                    penalty_docname: frm.doc.name,
+                    row_idx: idx,
+                    correction_note: row.correction_note
+                },
+                callback: function(r) {
+                    // Optionnel: afficher un message de confirmation
+                }
+            });
+        }
+    },
+
+    status_justification: function(frm, cdt, cdn) {
+        var row = locals[cdt][cdn];
+        // Bloquer tout changement si les pénalités sont à 0
+        if ((row.original_late_penalty || 0) == 0 && (row.original_early_penalty || 0) == 0) {
+            frappe.model.set_value(cdt, cdn, 'status_justification', 'Pending');
+            frappe.msgprint('لا يمكن تغيير حالة التبرير لأن العقوبة = 0.');
+            return;
+        }
+        if (row.status_justification && row.status_justification.toLowerCase() === 'approved') {
+            // Marquer comme modifié
+            frappe.model.set_value(cdt, cdn, 'is_corrected', 1);
+            // Mettre les pénalités à 0
+            frappe.model.set_value(cdt, cdn, 'corrected_late_penalty', 0);
+            frappe.model.set_value(cdt, cdn, 'corrected_early_penalty', 0);
+            // Sauvegarder le document après modification
+            frm.save();
+        }
+    },
+
+    justifications_btn2: function(frm,cdt, cdn) {
+        var row = locals[cdt][cdn];
+        // Vérifier si le champ status_justification est en read-only (ou non éditable)
+        var is_readonly = false;
+        // Méthode 1 : vérifier la condition métier (comme dans le JSON)
+        if ((row.original_late_penalty || 0) == 0 && (row.original_early_penalty || 0) == 0) {
+            is_readonly = true;
+        }
+        // Méthode 2 : vérifier si le champ est explicitement read-only (optionnel)
+        // is_readonly = frappe.meta.get_docfield('Penalty Detail', 'status_justification', frm.doc.name).read_only;
+        if (is_readonly) {
+            frappe.set_prporty(cdt, cdn, 'correction_note', 'read_only', true);
+            frappe.msgprint('لا يمكن إضافة مبرر لهذه السطر لأن العقوبة = 0.');
+            return;
+        }
+        console.log("Row data:", row);
+        console.log("CDT:", cdt, "CDN:", cdn);
+        frappe.prompt([
+            {
+                fieldtype: 'Small Text',
+                label: 'Justification',
+                fieldname: 'justification',
+                reqd: 1
+            }
+        ],
+            function(values) {
+                frappe.model.set_value(cdt,cdn,'correction_note', values.justification).then(function() {
+                    frappe.msgprint('تم تعيين المبرر بنجاح في السطر المحدد.');
+                    frm.save();
+                });
+            },
+        'Justification',
+        'Enregistrer'
+        );
     }
+
+    
+
+   
+    
+
+    
+
+
 });
 
 function mark_as_modified(frm, cdt, cdn) {

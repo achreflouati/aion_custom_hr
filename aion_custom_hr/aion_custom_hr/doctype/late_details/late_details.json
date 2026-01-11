@@ -1,0 +1,95 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-10 13:49:30.449233",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_dgly",
+  "attendance_date",
+  "shift_type",
+  "status",
+  "actual_late_minutes",
+  "original_late_penalty",
+  "corrected_late_penalty"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_dgly",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Attendance Date",
+   "reqd": 1
+  },
+  {
+    "fieldname":"justifications_btn_late",
+    "fieldtype":"Button",
+    "label":"Justifications",
+    "insert_after":"is_corrected",
+    "in_list_view": 1 
+    
+ },
+ {
+    "fieldname":"status_justification_late",
+    "fieldtype":"Select",
+    "label":"Status Justification",
+    "options":"Approved\nPending\nRejected",
+    "insert_after":"justifications_btn_late",
+    "in_list_view": 1
+ },
+  {
+   "fieldname": "shift_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Shift Type",
+   "options": "Shift Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Present\nAbsent\nHalf Day\nWork From Home\nOn Leave",
+   "read_only": 1
+  },
+  {
+   "fieldname": "actual_late_minutes",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Actual Late Minutes",
+   "read_only": 1
+  },
+  {
+   "fieldname": "original_late_penalty",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Original Late Penalty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "corrected_late_penalty",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Corrected Late Penalty"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-01-10 13:49:30.449233",
+ "modified_by": "Administrator",
+ "module": "aion_custom_hr",
+ "name": "Late Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

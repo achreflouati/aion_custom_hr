@@ -7,6 +7,8 @@
       "fieldtype": "Button",
       "label": "Justifications",
       "insert_after": "is_corrected"
+      
+      
     },
     {
       "doctype": "Custom Field",
@@ -16,7 +18,9 @@
       "fieldtype": "Select",
       "label": "Status Justification",
       "options": "Approved\nPending\nRejected",
+      "default":"Pending",
       "insert_after": "justifications_btn2"
+      
     },
   {
     "doctype": "Custom Field",

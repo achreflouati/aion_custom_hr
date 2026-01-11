@@ -2,6 +2,46 @@ import frappe
 from frappe import _
 from datetime import datetime, timedelta
 
+# Envoi d'un mail au responsable lors de la justification
+@frappe.whitelist()
+def send_extra_hours_justification_mail(employee, docname, justification):
+    """
+    Envoie un mail au responsable (report_to) pour valider l'extra hours après justification de l'employé.
+    """
+    try:
+        # Récupérer le responsable (report_to) de l'employé
+        report_to = frappe.get_value("Employee", employee, "reports_to")
+        if not report_to:
+            return {"success": False, "message": "لا يوجد مسؤول مباشر معرف لهذا الموظف."}
+        # Récupérer l'email du responsable
+        report_to_user = frappe.get_value("Employee", report_to, "user_id")
+        if not report_to_user:
+            return {"success": False, "message": "المسؤول المباشر لا يملك حساب مستخدم مرتبط."}
+        # Récupérer le nom de l'employé
+        employee_name = frappe.get_value("Employee", employee, "employee_name")
+        # Lien vers le document
+        doc_url = frappe.utils.get_url_to_form("Extra Hours", docname)
+        subject = f"يرجى التحقق من ساعات العمل الإضافية للموظف {employee_name}"
+        message = (
+            f"مرحباً،<br>قام الموظف <b>{employee_name}</b> بتعبئة تبرير لساعات العمل الإضافية.<br>"
+            f"التبرير: <b>{justification}</b><br>"
+            "يرجى الدخول على الرابط أدناه لمراجعة وتأكيد أو رفض هذه الساعات:<br>"
+            f"<a href='{doc_url}' style='display:inline-block;padding:10px 20px;background:#28a745;color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;margin-top:10px;'>عرض الوثيقة</a>"
+        )
+        frappe.sendmail(
+            recipients=[report_to_user],
+            subject=subject,
+            message=message,
+            delayed=False
+        )
+        return {"success": True}
+    except Exception as e:
+        frappe.log_error(f"Erreur envoi mail justification extra hours: {str(e)}")
+        return {"success": False, "message": str(e)}
+import frappe
+from frappe import _
+from datetime import datetime, timedelta
+
 
 @frappe.whitelist()
 def load_extra_hours_for_period(employee, from_date, to_date):
@@ -174,7 +214,7 @@ def approve_extra_hours(extra_hours_name, approval_status, approval_comments="")
 
 @frappe.whitelist()
 def get_approved_extra_hours_for_salary_slip(employee, start_date, end_date):
-    """Récupérer les heures supplémentaires approuvées pour le salary slip"""
+    """Récupérer les heures الإضافية approuvées pour le salary slip"""
     
     approved_extra_hours = frappe.db.sql("""
         SELECT SUM(eh.total_approved_extra_hours) as total_approved_hours

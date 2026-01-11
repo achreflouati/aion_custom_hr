@@ -159,5 +159,24 @@
     "fieldtype": "Text",
     "label": "Comments",
     "insert_after": "column_break_3"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-justification_btn",
+    "dt": "Extra Hours Detail",
+    "fieldname": "justification_btn",
+    "fieldtype": "Button",
+    "label": "Justifier",
+    "insert_after": "comments",
+    "depends_on": "eval:doc.status == 'Pending'"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Extra Hours Detail-justification_text",
+    "dt": "Extra Hours Detail",
+    "fieldname": "justification_text",
+    "fieldtype": "Small Text",
+    "label": "Justification",
+    "insert_after": "justification_btn"
   }
 ]
